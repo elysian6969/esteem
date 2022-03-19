@@ -67,7 +67,7 @@ extract_library "libavutil.so.56"
 extract_library "libswscale.so.5"
 extract_library "libvpx.so.6"
 extract_library "libopenvr_api.so"
-extract_library "libSDL2-2.0.so.0"
+#extract_library "libSDL2-2.0.so.0"
 
 echo " * Extracting binaries..."
 
