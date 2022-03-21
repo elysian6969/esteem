@@ -1,0 +1,8 @@
+[package]
+edition = "2021"
+name = "steamclient"
+version = "0.0.0"
+
+[lib]
+crate-type = ["cdylib"]
+path = "src/lib.rs"
