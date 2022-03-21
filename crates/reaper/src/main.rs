@@ -1,7 +1,19 @@
+use std::collections::BTreeMap;
 use std::env;
 use std::process::Command;
 
 fn main() {
+    let env = env::vars_os().collect::<BTreeMap<_, _>>();
+
+    let env = env
+        .into_iter()
+        .map(|(key, value)| format!("{key:?} -> {value:?}"))
+        .collect::<Vec<_>>();
+
+    let env = env.join("\n");
+
+    println!("{env}");
+
     let args = env::args_os()
         .map(|arg| format!("{arg:?}"))
         .collect::<Vec<_>>();
