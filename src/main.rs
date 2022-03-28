@@ -194,6 +194,7 @@ fn main() {
     }
 
     let mut child = command.spawn().expect("spawn steam");
+    let status = child.wait().expect("wait steam");
 
-    child.wait().expect("wait steam");
+    println!("{status:?}");
 }
