@@ -1,4 +1,33 @@
 #[macro_export]
+macro_rules! api_fn {
+    (
+        $name:ident(&$instance:ident) -> $output:ty {
+            $($body:tt)*
+        }
+    ) => {
+        paste::paste! {
+            #[no_mangle]
+            pub extern "C" fn [<SteamAPI_ISteam $instance _ $name>](this: *const $instance) -> $output {
+                $($body)*
+            }
+        }
+    };
+
+    (
+        $name:ident(&$instance:ident, $($arg:ident: $argty:ty),* $(,)*) -> $output:ty {
+            $($body:tt)*
+        }
+    ) => {
+        paste::paste! {
+            #[no_mangle]
+            pub extern "C" fn [<SteamAPI_ISteam $instance _ $name>](this: *const $instance, $($arg: $argty),*) -> $output {
+                $($body)*
+            }
+        }
+    };
+}
+
+#[macro_export]
 macro_rules! debug {
     () => {{
         use core::{any, slice, str};
@@ -20,7 +49,7 @@ macro_rules! debug {
 #[macro_export]
 macro_rules! virtual_struct {
     // struct generation
-    //
+
     (
         @signature
         $instance:ident {}

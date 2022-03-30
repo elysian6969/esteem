@@ -1,14 +1,14 @@
 use super::{
-    debug, virtual_struct, AccountKind, Apps, Friends, GameServer, GameServerStats, Matchmaking,
-    MatchmakingServers, Networking, PipeHandle, RemoteStorage, Screenshots, User, UserHandle,
-    UserStats, Utils,
+    api_fn, debug, virtual_struct, AccountKind, Apps, Friends, GameServer, GameServerStats,
+    Matchmaking, MatchmakingServers, Networking, PipeHandle, RemoteStorage, Screenshots, User,
+    UserHandle, UserStats, Utils,
 };
 use core::ptr;
 use std::ffi::CStr;
 
 virtual_struct! { Client {
     fn create_pipe(&self) -> PipeHandle,
-    fn release_pipe(&self, pipe_handle: PipeHandle) ->bool,
+    fn release_pipe(&self, pipe_handle: PipeHandle) -> bool,
     fn connect_to_global_user(&self, pipe_handle: PipeHandle) -> UserHandle,
     fn create_local_user(&self, pipe_handle: *const PipeHandle, account_kind: AccountKind) ->UserHandle,
     fn release_user(&self, pipe_handle: PipeHandle, user_handle: UserHandle) -> (),
@@ -56,28 +56,22 @@ impl Client {
     }
 }
 
-#[no_mangle]
-pub extern "C" fn SteamAPI_ISteamClient_CreateSteamPipe(this: *const Client) -> PipeHandle {
+api_fn! { CreateSteamPipe(&Client) -> PipeHandle {
     debug!();
 
     0
-}
+} }
 
-#[no_mangle]
-pub extern "C" fn SteamAPI_ISteamClient_BReleaseSteamPipe(
-    this: *const Client,
-    pipe_handle: PipeHandle,
-) -> bool {
+api_fn! { BReleaseSteamPipe(&Client, pipe_handle: PipeHandle) -> bool {
     debug!();
 
     println!("pipe_handle = {pipe_handle:?}");
 
     true
-}
+} }
 
-#[no_mangle]
-pub extern "C" fn SteamAPI_ISteamClient_ConnectToGlobalUser(
-    this: *const Client,
+api_fn! { ConnectToGlobalUser(
+    &Client,
     pipe_handle: PipeHandle,
 ) -> UserHandle {
     debug!();
@@ -85,11 +79,10 @@ pub extern "C" fn SteamAPI_ISteamClient_ConnectToGlobalUser(
     println!("pipe_handle = {pipe_handle:?}");
 
     0
-}
+} }
 
-#[no_mangle]
-pub extern "C" fn SteamAPI_ISteamClient_CreateLocalUser(
-    this: *const Client,
+api_fn! { CreateLocalUser(
+    &Client,
     pipe_handle: *const PipeHandle,
     account_kind: AccountKind,
 ) -> UserHandle {
@@ -99,23 +92,21 @@ pub extern "C" fn SteamAPI_ISteamClient_CreateLocalUser(
     println!("account_kind = {account_kind:?}");
 
     0
-}
+} }
 
-#[no_mangle]
-pub extern "C" fn SteamAPI_ISteamClient_ReleaseUser(
-    this: *const Client,
+api_fn! { ReleaseUser(
+    &Client,
     pipe_handle: PipeHandle,
     user_handle: UserHandle,
-) {
+) -> () {
     debug!();
 
     println!("user_handle = {user_handle:?}");
     println!("pipe_handle = {pipe_handle:?}");
-}
+} }
 
-#[no_mangle]
-pub extern "C" fn SteamAPI_ISteamClient_GetISteamUser(
-    this: *const Client,
+api_fn! { GetISteamUser(
+    &Client,
     user_handle: UserHandle,
     pipe_handle: PipeHandle,
     pch_version: *const u8,
@@ -126,11 +117,10 @@ pub extern "C" fn SteamAPI_ISteamClient_GetISteamUser(
     println!("pipe_handle = {pipe_handle:?}");
 
     &super::FAKE_USER
-}
+} }
 
-#[no_mangle]
-pub extern "C" fn SteamAPI_ISteamClient_GetISteamGameServer(
-    this: *const Client,
+api_fn! { GetISteamGameServer(
+    &Client,
     user_handle: UserHandle,
     pipe_handle: PipeHandle,
     pch_version: *const u8,
@@ -141,19 +131,17 @@ pub extern "C" fn SteamAPI_ISteamClient_GetISteamGameServer(
     println!("pipe_handle = {pipe_handle:?}");
 
     ptr::null()
-}
+} }
 
-#[no_mangle]
-pub extern "C" fn SteamAPI_ISteamClient_SetLocalIPBinding(this: *const Client, ip: u32, port: u16) {
+api_fn! { SetLocalIPBinding(&Client, ip: u32, port: u16) -> () {
     debug!();
 
     println!("port = {:?}", port);
     println!("ip = {:?}", ip);
-}
+} }
 
-#[no_mangle]
-pub extern "C" fn SteamAPI_ISteamClient_GetISteamFriends(
-    this: *const Client,
+api_fn! { GetISteamFriends(
+    &Client,
     user_handle: UserHandle,
     pipe_handle: PipeHandle,
     pch_version: *const u8,
@@ -164,11 +152,10 @@ pub extern "C" fn SteamAPI_ISteamClient_GetISteamFriends(
     println!("pipe_handle = {pipe_handle:?}");
 
     &super::FAKE_FRIENDS
-}
+} }
 
-#[no_mangle]
-pub extern "C" fn SteamAPI_ISteamClient_GetISteamUtils(
-    this: *const Client,
+api_fn! { GetISteamUtils(
+    &Client,
     user_handle: UserHandle,
     pipe_handle: PipeHandle,
     pch_version: *const u8,
@@ -182,11 +169,10 @@ pub extern "C" fn SteamAPI_ISteamClient_GetISteamUtils(
     });
 
     ptr::null()
-}
+} }
 
-#[no_mangle]
-pub extern "C" fn SteamAPI_ISteamClient_GetISteamMatchmaking(
-    this: *const Client,
+api_fn! { GetISteamMatchmaking(
+    &Client,
     user_handle: UserHandle,
     pipe_handle: PipeHandle,
     pch_version: *const u8,
@@ -200,11 +186,10 @@ pub extern "C" fn SteamAPI_ISteamClient_GetISteamMatchmaking(
     });
 
     ptr::null()
-}
+} }
 
-#[no_mangle]
-pub extern "C" fn SteamAPI_ISteamClient_GetISteamMatchmakingServers(
-    this: *const Client,
+api_fn! { GetISteamMatchmakingServers(
+    &Client,
     user_handle: UserHandle,
     pipe_handle: PipeHandle,
     pch_version: *const u8,
@@ -218,11 +203,10 @@ pub extern "C" fn SteamAPI_ISteamClient_GetISteamMatchmakingServers(
     });
 
     ptr::null()
-}
+} }
 
-#[no_mangle]
-pub extern "C" fn SteamAPI_ISteamClient_GetISteamGenericInterface(
-    this: *const Client,
+api_fn! { GetISteamGenericInterface(
+    &Client,
     user_handle: UserHandle,
     pipe_handle: PipeHandle,
     pch_version: *const u8,
@@ -236,11 +220,10 @@ pub extern "C" fn SteamAPI_ISteamClient_GetISteamGenericInterface(
     });
 
     ptr::null()
-}
+} }
 
-#[no_mangle]
-pub extern "C" fn SteamAPI_ISteamClient_GetISteamUserStats(
-    this: *const Client,
+api_fn! { GetISteamUserStats(
+    &Client,
     user_handle: UserHandle,
     pipe_handle: PipeHandle,
     pch_version: *const u8,
@@ -254,11 +237,10 @@ pub extern "C" fn SteamAPI_ISteamClient_GetISteamUserStats(
     });
 
     ptr::null()
-}
+} }
 
-#[no_mangle]
-pub extern "C" fn SteamAPI_ISteamClient_GetISteamGameServerStats(
-    this: *const Client,
+api_fn! { GetISteamGameServerStats(
+    &Client,
     user_handle: UserHandle,
     pipe_handle: PipeHandle,
     pch_version: *const u8,
@@ -272,11 +254,10 @@ pub extern "C" fn SteamAPI_ISteamClient_GetISteamGameServerStats(
     });
 
     ptr::null()
-}
+} }
 
-#[no_mangle]
-pub extern "C" fn SteamAPI_ISteamClient_GetISteamApps(
-    this: *const Client,
+api_fn! { GetISteamApps(
+    &Client,
     user_handle: UserHandle,
     pipe_handle: PipeHandle,
     pch_version: *const u8,
@@ -290,11 +271,10 @@ pub extern "C" fn SteamAPI_ISteamClient_GetISteamApps(
     });
 
     ptr::null()
-}
+} }
 
-#[no_mangle]
-pub extern "C" fn SteamAPI_ISteamClient_GetISteamNetworking(
-    this: *const Client,
+api_fn! { GetISteamNetworking(
+    &Client,
     user_handle: UserHandle,
     pipe_handle: PipeHandle,
     pch_version: *const u8,
@@ -308,11 +288,10 @@ pub extern "C" fn SteamAPI_ISteamClient_GetISteamNetworking(
     });
 
     ptr::null()
-}
+} }
 
-#[no_mangle]
-pub extern "C" fn SteamAPI_ISteamClient_GetISteamRemoteStorage(
-    this: *const Client,
+api_fn! { GetISteamRemoteStorage(
+    &Client,
     user_handle: UserHandle,
     pipe_handle: PipeHandle,
     pch_version: *const u8,
@@ -326,11 +305,10 @@ pub extern "C" fn SteamAPI_ISteamClient_GetISteamRemoteStorage(
     });
 
     ptr::null()
-}
+} }
 
-#[no_mangle]
-pub extern "C" fn SteamAPI_ISteamClient_GetISteamScreenshots(
-    this: *const Client,
+api_fn! { GetISteamScreenshots(
+    &Client,
     user_handle: UserHandle,
     pipe_handle: PipeHandle,
     pch_version: *const u8,
@@ -344,4 +322,4 @@ pub extern "C" fn SteamAPI_ISteamClient_GetISteamScreenshots(
     });
 
     ptr::null()
-}
+} }
