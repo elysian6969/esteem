@@ -1,15 +1,32 @@
 use super::{
-    debug, AccountKind, Apps, Friends, GameServer, GameServerStats, Matchmaking,
+    debug, virtual_struct, AccountKind, Apps, Friends, GameServer, GameServerStats, Matchmaking,
     MatchmakingServers, Networking, PipeHandle, RemoteStorage, Screenshots, User, UserHandle,
     UserStats, Utils,
 };
 use core::ptr;
 use std::ffi::CStr;
 
-#[repr(C)]
-pub struct Client {
-    vtable: &'static VTable,
-}
+virtual_struct! { Client {
+    fn create_pipe(&self) -> PipeHandle,
+    fn release_pipe(&self, pipe_handle: PipeHandle) ->bool,
+    fn connect_to_global_user(&self, pipe_handle: PipeHandle) -> UserHandle,
+    fn create_local_user(&self, pipe_handle: *const PipeHandle, account_kind: AccountKind) ->UserHandle,
+    fn release_user(&self, pipe_handle: PipeHandle, user_handle: UserHandle) -> (),
+    fn get_user(&self, pipe_handle: PipeHandle, user_handle: UserHandle, pch_version: *const u8) -> *const User,
+    fn get_game_server(&self, pipe_handle: PipeHandle, user_handle: UserHandle, pch_version: *const u8) -> *const GameServer,
+    fn set_local_ip_binding(&self, ip: u32, port: u16) ->(),
+    fn get_friends(&self, pipe_handle: PipeHandle, user_handle: UserHandle, pch_version: *const u8) -> *const Friends,
+    fn get_utils(&self, pipe_handle: PipeHandle, user_handle: UserHandle, pch_version: *const u8) -> *const Utils,
+    fn get_matchmaking(&self, pipe_handle: PipeHandle, user_handle: UserHandle, pch_version: *const u8) -> *const Matchmaking,
+    fn get_matchmaking_servers(&self, pipe_handle: PipeHandle, user_handle: UserHandle, pch_version: *const u8) -> *const MatchmakingServers,
+    fn get_generic_interface(&self, pipe_handle: PipeHandle, user_handle: UserHandle, pch_version: *const u8) -> *const (),
+    fn get_user_stats(&self, pipe_handle: PipeHandle, user_handle: UserHandle, pch_version: *const u8) -> *const UserStats,
+    fn get_game_server_stats(&self, pipe_handle: PipeHandle, user_handle: UserHandle, pch_version: *const u8) -> *const GameServerStats,
+    fn get_apps(&self, pipe_handle: PipeHandle, user_handle: UserHandle, pch_version: *const u8) -> *const Apps,
+    fn get_networking(&self, pipe_handle: PipeHandle, user_handle: UserHandle, pch_version: *const u8) -> *const Networking,
+    fn get_remote_storage(&self, pipe_handle: PipeHandle, user_handle: UserHandle, pch_version: *const u8) -> *const RemoteStorage,
+    fn get_screenshots(&self, pipe_handle: PipeHandle, user_handle: UserHandle, pch_version: *const u8) -> *const Screenshots,
+} }
 
 impl Client {
     pub const fn new() -> Self {
@@ -37,118 +54,6 @@ impl Client {
             },
         }
     }
-}
-
-#[repr(C)]
-struct VTable {
-    create_pipe: extern "C" fn(this: *const Client) -> PipeHandle,
-
-    release_pipe: extern "C" fn(this: *const Client, pipe_handle: PipeHandle) -> bool,
-
-    connect_to_global_user:
-        extern "C" fn(this: *const Client, pipe_handle: PipeHandle) -> UserHandle,
-
-    create_local_user: extern "C" fn(
-        this: *const Client,
-        pipe_handle: *const PipeHandle,
-        account_kind: AccountKind,
-    ) -> UserHandle,
-
-    release_user:
-        extern "C" fn(this: *const Client, pipe_handle: PipeHandle, user_handle: UserHandle),
-
-    get_user: extern "C" fn(
-        this: *const Client,
-        user_handle: UserHandle,
-        pipe_handle: PipeHandle,
-        pch_version: *const u8,
-    ) -> *const User,
-
-    get_game_server: extern "C" fn(
-        this: *const Client,
-        user_handle: UserHandle,
-        pipe_handle: PipeHandle,
-        pch_version: *const u8,
-    ) -> *const GameServer,
-
-    set_local_ip_binding: extern "C" fn(this: *const Client, ip: u32, port: u16),
-
-    get_friends: extern "C" fn(
-        this: *const Client,
-        user_handle: UserHandle,
-        pipe_handle: PipeHandle,
-        pch_version: *const u8,
-    ) -> *const Friends,
-
-    get_utils: extern "C" fn(
-        this: *const Client,
-        user_handle: UserHandle,
-        pipe_handle: PipeHandle,
-        pch_version: *const u8,
-    ) -> *const Utils,
-
-    get_matchmaking: extern "C" fn(
-        this: *const Client,
-        user_handle: UserHandle,
-        pipe_handle: PipeHandle,
-        pch_version: *const u8,
-    ) -> *const Matchmaking,
-
-    get_matchmaking_servers: extern "C" fn(
-        this: *const Client,
-        user_handle: UserHandle,
-        pipe_handle: PipeHandle,
-        pch_version: *const u8,
-    ) -> *const MatchmakingServers,
-
-    get_generic_interface: extern "C" fn(
-        this: *const Client,
-        user_handle: UserHandle,
-        pipe_handle: PipeHandle,
-        pch_version: *const u8,
-    ) -> *const (),
-
-    get_user_stats: extern "C" fn(
-        this: *const Client,
-        user_handle: UserHandle,
-        pipe_handle: PipeHandle,
-        pch_version: *const u8,
-    ) -> *const UserStats,
-
-    get_game_server_stats: extern "C" fn(
-        this: *const Client,
-        user_handle: UserHandle,
-        pipe_handle: PipeHandle,
-        pch_version: *const u8,
-    ) -> *const GameServerStats,
-
-    get_apps: extern "C" fn(
-        this: *const Client,
-        user_handle: UserHandle,
-        pipe_handle: PipeHandle,
-        pch_version: *const u8,
-    ) -> *const Apps,
-
-    get_networking: extern "C" fn(
-        this: *const Client,
-        user_handle: UserHandle,
-        pipe_handle: PipeHandle,
-        pch_version: *const u8,
-    ) -> *const Networking,
-
-    get_remote_storage: extern "C" fn(
-        this: *const Client,
-        user_handle: UserHandle,
-        pipe_handle: PipeHandle,
-        pch_version: *const u8,
-    ) -> *const RemoteStorage,
-
-    get_screenshots: extern "C" fn(
-        this: *const Client,
-        user_handle: UserHandle,
-        pipe_handle: PipeHandle,
-        pch_version: *const u8,
-    ) -> *const Screenshots,
 }
 
 #[no_mangle]
@@ -258,7 +163,7 @@ pub extern "C" fn SteamAPI_ISteamClient_GetISteamFriends(
     println!("user_handle = {user_handle:?}");
     println!("pipe_handle = {pipe_handle:?}");
 
-    ptr::null()
+    &super::FAKE_FRIENDS
 }
 
 #[no_mangle]

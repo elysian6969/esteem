@@ -1,10 +1,33 @@
-use super::{debug, UserHandle};
+use super::{debug, virtual_struct, UserHandle};
 use core::ptr;
 
-#[repr(C)]
-pub struct User {
-    vtable: &'static VTable,
-}
+virtual_struct! { User {
+    fn get_handle(&self) -> UserHandle,
+    fn logged_on(&self) -> bool,
+    fn get_steam_id(&self) -> u64,
+    fn initiate_game_connection(&self, auth_blob: *const (), auth_blob_max: i32, steam_id_game_server: u64, ip: u32, port: u16, secure: bool) -> i32,
+    fn terminate_game_connection(&self, ip: u32, port: u16) -> (),
+    fn track_app_usage_event(&self, game_id: u64, app_usage_event: i32, pch_extra_info: *const u8) -> (),
+    fn get_user_data_folder(&self, pch_buffer: *mut u8, cub_buffer: i32) -> bool,
+    fn start_voice_recording(&self) -> (),
+    fn stop_voice_recording(&self) -> (),
+    fn get_available_voice(&self, pcb_compressed: *const u32, pcb_uncompressed: *const u32, uncompressed_voice_desired_sample_rate: u32) -> i32,
+    fn get_voice(&self, want_compressed: bool, dst_buf: *mut (), dst_buf_len: u32, bytes_written: u32, want_uncompress: bool, uncompressed_dst_buf: *mut (), uncompressed_dst_buf_len: u32, uncompressed_bytes_written: u32, uncompressed_voice_desired_sample_rate: u32) -> i32,
+    fn decompress_voice(&self, compressed_buf: *const (), compressed: u32, dst_buf: *mut (), dst_buf_len: u32, bytes_written: u32, desired_sample_rate: u32) -> i32,
+    fn get_voice_optimal_sample_rate(&self) -> u32,
+    fn get_auth_session_ticket(&self, ticket: *const (), auth_ticket: *const (), pcb_ticket: *const u32) -> i32,
+    fn begin_auth_session(&self, auth_ticket: *const (), auth_ticket_len: i32, steam_id: i32) -> i32,
+    fn end_auth_session(&self, steam_id: i32) -> (),
+    fn cancel_auth_ticket(&self, auth_ticket_handle: i32) -> (),
+    fn user_has_license_for_app(&self, steam_id: i32, app_id: i32) -> i32,
+    fn is_behind_nat(&self) -> bool,
+    fn advertise_game(&self, game_server_id: u32, ip: u32, port: u16) -> bool,
+    fn request_encrypted_app_ticket(&self, data_to_include: *const (), data_to_include_len: i32) -> i32,
+    fn get_encrypted_app_ticket(&self, ticket: *const (), max_ticket: i32, pcb_ticket: *const u32) -> bool,
+    fn get_game_badge_level(&self, series: i32, foil: i32) -> i32,
+    fn get_player_steam_level(&self) -> i32,
+    fn request_store_url(&self, pch_redirect_url: *const u8) -> i32,
+} }
 
 impl User {
     pub const fn new() -> Self {
@@ -38,121 +61,6 @@ impl User {
             },
         }
     }
-}
-
-#[repr(C)]
-struct VTable {
-    get_handle: extern "C" fn(this: *const User) -> UserHandle,
-
-    logged_on: extern "C" fn(this: *const User) -> bool,
-
-    get_steam_id: extern "C" fn(this: *const User) -> u64,
-
-    initiate_game_connection: extern "C" fn(
-        this: *const User,
-        auth_blob: *const (),
-        auth_blob_max: i32,
-        steam_id_game_server: u64,
-        ip: u32,
-        port: u16,
-        secure: bool,
-    ) -> i32,
-
-    terminate_game_connection: extern "C" fn(this: *const User, ip: u32, port: u16),
-
-    track_app_usage_event: extern "C" fn(
-        this: *const User,
-        game_id: u64,
-        app_usage_event: i32,
-        pch_extra_info: *const u8,
-    ),
-
-    get_user_data_folder:
-        extern "C" fn(this: *const User, pch_buffer: *mut u8, cub_buffer: i32) -> bool,
-
-    start_voice_recording: extern "C" fn(this: *const User),
-
-    stop_voice_recording: extern "C" fn(this: *const User),
-
-    // TODO: voice result
-    get_available_voice: extern "C" fn(
-        this: *const User,
-        pcb_compressed: *const u32,
-        pcb_uncompressed: *const u32,
-        uncompressed_voice_desired_sample_rate: u32,
-    ) -> i32,
-
-    // TODO: voice result
-    get_voice: extern "C" fn(
-        this: *const User,
-        want_compressed: bool,
-        dst_buf: *mut (),
-        dst_buf_len: u32,
-        bytes_written: u32,
-        want_uncompress: bool,
-        uncompressed_dst_buf: *mut (),
-        uncompressed_dst_buf_len: u32,
-        uncompressed_bytes_written: u32,
-        uncompressed_voice_desired_sample_rate: u32,
-    ) -> i32,
-
-    // TODO: voice result
-    decompress_voice: extern "C" fn(
-        this: *const User,
-        compressed_buf: *const (),
-        compressed: u32,
-        dst_buf: *mut (),
-        dst_buf_len: u32,
-        bytes_written: u32,
-        desired_sample_rate: u32,
-    ) -> i32,
-
-    get_voice_optimal_sample_rate: extern "C" fn(this: *const User) -> u32,
-
-    get_auth_session_ticket: extern "C" fn(
-        this: *const User,
-        ticket: *const (),
-        auth_ticket: *const (),
-        pcb_ticket: *const u32,
-    ) -> i32,
-
-    // todo auth result
-    begin_auth_session: extern "C" fn(
-        this: *const User,
-        auth_ticket: *const (),
-        auth_ticket_len: i32,
-        steam_id: i32,
-    ) -> i32,
-
-    end_auth_session: extern "C" fn(this: *const User, steam_id: i32),
-
-    cancel_auth_ticket: extern "C" fn(this: *const User, auth_ticket_handle: i32),
-
-    user_has_license_for_app: extern "C" fn(this: *const User, steam_id: i32, app_id: i32) -> i32,
-
-    is_behind_nat: extern "C" fn(this: *const User) -> bool,
-
-    advertise_game:
-        extern "C" fn(this: *const User, game_server_id: u32, ip: u32, port: u16) -> bool,
-
-    request_encrypted_app_ticket: extern "C" fn(
-        this: *const User,
-        data_to_include: *const (),
-        data_to_include_len: i32,
-    ) -> i32,
-
-    get_encrypted_app_ticket: extern "C" fn(
-        this: *const User,
-        ticket: *const (),
-        max_ticket: i32,
-        pcb_ticket: *const u32,
-    ) -> bool,
-
-    get_game_badge_level: extern "C" fn(this: *const User, series: i32, foil: i32) -> i32,
-
-    get_player_steam_level: extern "C" fn(this: *const User) -> i32,
-
-    request_store_url: extern "C" fn(this: *const User, pch_redirect_url: *const u8) -> i32,
 }
 
 #[no_mangle]

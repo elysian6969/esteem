@@ -9,37 +9,23 @@ use std::ffi::CStr;
 pub use account_kind::AccountKind;
 pub use client::Client;
 pub use error::Error;
+pub use friends::Friends;
 pub use user::User;
 
 mod account_kind;
 mod error;
 
 pub mod client;
+pub mod friends;
 pub mod user;
 
-#[macro_export]
-macro_rules! debug {
-    () => {{
-        use core::{any, slice, str};
-
-        fn a() {}
-
-        const FULL_NAME: &str = any::type_name_of_val(&a);
-        const NAME: &str = unsafe {
-            str::from_utf8_unchecked(slice::from_raw_parts(
-                FULL_NAME.as_ptr(),
-                FULL_NAME.len().saturating_sub(3),
-            ))
-        };
-
-        println!("{NAME}");
-    }};
-}
+pub(crate) mod macros;
 
 pub type PipeHandle = i32;
 pub type UserHandle = i32;
 
 pub static FAKE_CLIENT: Client = Client::new();
+pub static FAKE_FRIENDS: Friends = Friends::new();
 pub static FAKE_USER: User = User::new();
 
 #[repr(C)]
@@ -47,9 +33,6 @@ pub struct GameServer {}
 
 #[repr(C)]
 pub struct GameServerStats {}
-
-#[repr(C)]
-pub struct Friends {}
 
 #[repr(C)]
 pub struct Utils {}
