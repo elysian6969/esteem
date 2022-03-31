@@ -1,10 +1,18 @@
-use super::debug;
+use super::{api_fn, debug, virtual_struct, Universe};
 use core::ptr;
 
-#[repr(C)]
-pub struct Utils {
-    vtable: &'static VTable,
-}
+virtual_struct! { Utils {
+    fn get_seconds_since_app_active(&self) -> u32,
+    fn get_seconds_since_computer_active(&self) -> u32,
+    fn get_connected_universe(&self) -> Universe,
+    fn get_server_real_time(&self) -> u32,
+    fn get_ip_country(&self) -> *const u8,
+    fn get_image_size(&self, image: i32, width: *mut u32, height: *mut u32) -> bool,
+    fn get_image_rgba(&self, image: i32, buf: *mut u8, len: i32) -> bool,
+    fn get_server_ip_port(&self, ip: *mut u32, port: *mut u16) -> bool,
+    fn get_current_battery_power(&self) -> u8,
+    fn get_app_id(&self) -> u32,
+} }
 
 impl Utils {
     pub const fn new() -> Self {
@@ -13,53 +21,77 @@ impl Utils {
                 get_seconds_since_app_active: SteamAPI_ISteamUtils_GetSecondsSinceAppActive,
                 get_seconds_since_computer_active:
                     SteamAPI_ISteamUtils_GetSecondsSinceComputerActive,
+                get_connected_universe: SteamAPI_ISteamUtils_GetConnectedUniverse,
+                get_server_real_time: SteamAPI_ISteamUtils_GetServerRealTime,
+                get_ip_country: SteamAPI_ISteamUtils_GetIPCountry,
+                get_image_size: SteamAPI_ISteamUtils_GetImageSize,
+                get_image_rgba: SteamAPI_ISteamUtils_GetImageRGBA,
+                get_server_ip_port: SteamAPI_ISteamUtils_GetCSERIPPort,
+                get_current_battery_power: SteamAPI_ISteamUtils_GetCurrentBatteryPower,
+                get_app_id: SteamAPI_ISteamUtils_GetAppId,
             },
         }
     }
 }
 
-#[repr(C)]
-struct VTable {
-    get_seconds_since_app_active: extern "C" fn(this: *const Utils) -> u32,
-    get_seconds_since_computer_active: extern "C" fn(this: *const Utils) -> u32,
-    get_connected_universe: extern "C" fn(this: *const Utils) -> u32,
-    get_server_real_time: extern "C" fn(this: *const Utils) -> u32,
-    get_ip_country: extern "C" fn(this: *const Utils) -> *const u8,
-}
-
-#[no_mangle]
-pub extern "C" fn SteamAPI_ISteamUtils_GetSecondsSinceAppActive(this: *const Utils) -> u32 {
+api_fn! { GetSecondsSinceAppActive(&Utils) -> u32 {
     debug!();
 
     0
-}
+} }
 
-#[no_mangle]
-pub extern "C" fn SteamAPI_ISteamUtils_GetSecondsSinceComputerActive(this: *const Utils) -> u32 {
+api_fn! { GetSecondsSinceComputerActive(&Utils) -> u32 {
     debug!();
 
     0
-}
+} }
 
-#[no_mangle]
-pub extern "C" fn SteamAPI_ISteamUtils_GetConnectedUniverse(this: *const Utils) -> i32 {
+api_fn! { GetConnectedUniverse(&Utils) -> Universe {
+    debug!();
+
+    Universe::Public
+} }
+
+api_fn! { GetServerRealTime(&Utils) -> u32 {
     debug!();
 
     0
-}
+} }
 
-#[no_mangle]
-pub extern "C" fn SteamAPI_ISteamUtils_GetServerRealTime(this: *const Utils) -> u32 {
-    debug!();
-
-    0
-}
-
-#[no_mangle]
-pub extern "C" fn SteamAPI_ISteamUtils_GetIPCountry(this: *const Utils) -> *const u8 {
+api_fn! { GetIPCountry(&Utils) -> *const u8 {
     debug!();
 
     let country = "US\0";
 
     country.as_ptr()
-}
+} }
+
+api_fn! { GetImageSize(&Utils, image: i32, width: *mut u32, height: *mut u32) -> bool {
+    debug!();
+
+    false
+} }
+
+api_fn! { GetImageRGBA(&Utils, image: i32, buf: *mut u8, len: i32) -> bool {
+    debug!();
+
+    false
+} }
+
+api_fn! { GetCSERIPPort(&Utils, ip: *mut u32, port: *mut u16) -> bool {
+    debug!();
+
+    false
+} }
+
+api_fn! { GetCurrentBatteryPower(&Utils) -> u8 {
+    debug!();
+
+    10
+} }
+
+api_fn! { GetAppId(&Utils) -> u32 {
+    debug!();
+
+    730
+} }

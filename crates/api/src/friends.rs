@@ -1,4 +1,4 @@
-use super::{debug, virtual_struct};
+use super::{api_fn, debug, virtual_struct};
 use core::ptr;
 
 virtual_struct! { Friends {
@@ -8,6 +8,14 @@ virtual_struct! { Friends {
     fn get_friend_count(&self, flags: i32) -> i32,
     fn get_friend_by_index(&self, index: i32, flags: i32) -> u64,
     fn get_friend_relationship(&self, friend_id: u64) -> i32,
+    fn get_friend_persona_state(&self, friend_id: u64) -> i32,
+    fn get_friend_persona_name(&self, friend_id: u64) -> *const u8,
+    fn get_friend_game_played(&self, friend_id: u64, game_info: *mut ()) -> bool,
+    fn get_friend_persona_name_history(&self, friend_id: u64, persona_name: i32) -> *const u8,
+    fn get_friend_steam_level(&self, friend_id: u64) -> i32,
+    fn get_player_nickname(&self, user_id: u64) -> *const u8,
+    fn get_friends_group_count(&self) -> i32,
+    fn get_friends_group_id_by_index(&self, index: i32) -> u64,
 } }
 
 impl Friends {
@@ -20,167 +28,158 @@ impl Friends {
                 get_friend_count: SteamAPI_ISteamFriends_GetFriendCount,
                 get_friend_by_index: SteamAPI_ISteamFriends_GetFriendByIndex,
                 get_friend_relationship: SteamAPI_ISteamFriends_GetFriendRelationship,
+                get_friend_persona_state: SteamAPI_ISteamFriends_GetFriendPersonaState,
+                get_friend_persona_name: SteamAPI_ISteamFriends_GetFriendPersonaName,
+                get_friend_game_played: SteamAPI_ISteamFriends_GetFriendGamePlayed,
+                get_friend_persona_name_history: SteamAPI_ISteamFriends_GetFriendPersonaNameHistory,
+                get_friend_steam_level: SteamAPI_ISteamFriends_GetFriendSteamLevel,
+                get_player_nickname: SteamAPI_ISteamFriends_GetPlayerNickname,
+                get_friends_group_count: SteamAPI_ISteamFriends_GetFriendsGroupCount,
+                get_friends_group_id_by_index: SteamAPI_ISteamFriends_GetFriendsGroupIDByIndex,
             },
         }
     }
 }
 
-#[no_mangle]
-pub extern "C" fn SteamAPI_ISteamFriends_GetPersonaName(this: *const Friends) -> *const u8 {
+api_fn! { GetPersonaName(&Friends) -> *const u8 {
     debug!();
 
     const NAME: &str = "elysian\0";
 
     NAME.as_ptr()
-}
+} }
 
-#[no_mangle]
-pub extern "C" fn SteamAPI_ISteamFriends_SetPersonaName(
-    this: *const Friends,
+api_fn! { SetPersonaName(
+    &Friends,
     name: *const u8,
 ) -> i32 {
     debug!();
 
     0
-}
+} }
 
-#[no_mangle]
-pub extern "C" fn SteamAPI_ISteamFriends_GetPersonaState(this: *const Friends) -> i32 {
+api_fn! { GetPersonaState(&Friends) -> i32 {
     debug!();
 
     0
-}
+} }
 
-#[no_mangle]
-pub extern "C" fn SteamAPI_ISteamFriends_GetFriendCount(this: *const Friends, flags: i32) -> i32 {
+api_fn! { GetFriendCount(&Friends, flags: i32) -> i32 {
     debug!();
 
     0
-}
+} }
 
-#[no_mangle]
-pub extern "C" fn SteamAPI_ISteamFriends_GetFriendByIndex(
-    this: *const Friends,
+api_fn! { GetFriendByIndex(
+    &Friends,
     index: i32,
     flags: i32,
 ) -> u64 {
     debug!();
 
     0
-}
+} }
 
-#[no_mangle]
-pub extern "C" fn SteamAPI_ISteamFriends_GetFriendRelationship(
-    this: *const Friends,
+api_fn! { GetFriendRelationship(
+    &Friends,
     friend: u64,
 ) -> i32 {
     debug!();
 
     0
-}
+} }
 
-#[no_mangle]
-pub extern "C" fn SteamAPI_ISteamFriends_GetFriendPersonaState(
-    this: *const Friends,
+api_fn! { GetFriendPersonaState(
+    &Friends,
     friend: u64,
 ) -> i32 {
     debug!();
 
     0
-}
+} }
 
-#[no_mangle]
-pub extern "C" fn SteamAPI_ISteamFriends_GetFriendPersonaName(
-    this: *const Friends,
+api_fn! { GetFriendPersonaName(
+    &Friends,
     friend: u64,
 ) -> *const u8 {
     debug!();
 
     ptr::null()
-}
+} }
 
-#[no_mangle]
-pub extern "C" fn SteamAPI_ISteamFriends_GetFriendGamePlayed(
-    this: *const Friends,
+api_fn! { GetFriendGamePlayed(
+    &Friends,
     friend: u64,
     game_info: *mut (),
 ) -> bool {
     debug!();
 
     false
-}
+} }
 
-#[no_mangle]
-pub extern "C" fn SteamAPI_ISteamFriends_GetFriendPersonaNameHistory(
-    this: *const Friends,
+api_fn! { GetFriendPersonaNameHistory(
+    &Friends,
     friend: u64,
     index: i32,
 ) -> *const u8 {
     debug!();
 
     ptr::null()
-}
+} }
 
-#[no_mangle]
-pub extern "C" fn SteamAPI_ISteamFriends_GetFriendSteamLevel(
-    this: *const Friends,
+api_fn! { GetFriendSteamLevel(
+    &Friends,
     friend: u64,
 ) -> i32 {
     debug!();
 
     9
-}
+} }
 
-#[no_mangle]
-pub extern "C" fn SteamAPI_ISteamFriends_GetPlayerNickname(
-    this: *const Friends,
+api_fn! { GetPlayerNickname(
+    &Friends,
     friend: u64,
 ) -> *const u8 {
     debug!();
 
     ptr::null()
-}
+} }
 
-#[no_mangle]
-pub extern "C" fn SteamAPI_ISteamFriends_GetFriendsGroupCount(this: *const Friends) -> i32 {
+api_fn! { GetFriendsGroupCount(&Friends) -> i32 {
     debug!();
 
     0
-}
+} }
 
-#[no_mangle]
-pub extern "C" fn SteamAPI_ISteamFriends_GetFriendsGroupIDByIndex(
-    this: *const Friends,
+api_fn! { GetFriendsGroupIDByIndex(
+    &Friends,
     group: i32,
-) -> i32 {
+) -> u64 {
     debug!();
 
     0
-}
+} }
 
-#[no_mangle]
-pub extern "C" fn SteamAPI_ISteamFriends_GetFriendsGroupName(
-    this: *const Friends,
+api_fn! { GetFriendsGroupName(
+    &Friends,
     group: i32,
 ) -> *const u8 {
     debug!();
 
     ptr::null()
-}
+} }
 
-#[no_mangle]
-pub extern "C" fn SteamAPI_ISteamFriends_GetFriendsGroupMembersCount(
-    this: *const Friends,
+api_fn! { GetFriendsGroupMembersCount(
+    &Friends,
     group: i32,
 ) -> i32 {
     debug!();
 
     0
-}
+} }
 
-#[no_mangle]
-pub extern "C" fn SteamAPI_ISteamFriends_GetFriendsGroupMembersList(
-    this: *const Friends,
+api_fn! { GetFriendsGroupMembersList(
+    &Friends,
     group: i32,
     members: *mut i32,
     members_len: i32,
@@ -188,46 +187,41 @@ pub extern "C" fn SteamAPI_ISteamFriends_GetFriendsGroupMembersList(
     debug!();
 
     0
-}
+} }
 
-#[no_mangle]
-pub extern "C" fn SteamAPI_ISteamFriends_HasFriend(
-    this: *const Friends,
+api_fn! { HasFriend(
+    &Friends,
     index: i32,
     flags: i32,
 ) -> bool {
     debug!();
 
     false
-}
+} }
 
-#[no_mangle]
-pub extern "C" fn SteamAPI_ISteamFriends_GetClanCount(this: *const Friends) -> i32 {
+api_fn! { GetClanCount(&Friends) -> i32 {
     debug!();
 
     0
-}
+} }
 
-#[no_mangle]
-pub extern "C" fn SteamAPI_ISteamFriends_GetClanByIndex(this: *const Friends, clan: i32) -> u64 {
+api_fn! { GetClanByIndex(&Friends, clan: i32) -> u64 {
     debug!();
 
     0
-}
+} }
 
-#[no_mangle]
-pub extern "C" fn SteamAPI_ISteamFriends_GetClanName(
-    this: *const Friends,
+api_fn! { GetClanName(
+    &Friends,
     clan_id: u32,
 ) -> *const u8 {
     debug!();
 
     ptr::null()
-}
+} }
 
-#[no_mangle]
-pub extern "C" fn SteamAPI_ISteamFriends_GetClanTag(
-    this: *const Friends,
+api_fn! { GetClanTag(
+    &Friends,
     clan_id: u32,
 ) -> *const u8 {
     debug!();
@@ -235,11 +229,10 @@ pub extern "C" fn SteamAPI_ISteamFriends_GetClanTag(
     let tag = "eleutheria\0";
 
     tag.as_ptr()
-}
+} }
 
-#[no_mangle]
-pub extern "C" fn SteamAPI_ISteamFriends_GetClanActivityCounts(
-    this: *const Friends,
+api_fn! { GetClanActivityCounts(
+    &Friends,
     clan_id: u64,
     online: *const i32,
     in_game: *const i32,
@@ -248,11 +241,10 @@ pub extern "C" fn SteamAPI_ISteamFriends_GetClanActivityCounts(
     debug!();
 
     0
-}
+} }
 
-#[no_mangle]
-pub extern "C" fn SteamAPI_ISteamFriends_DownloadClanActivityCounts(
-    this: *const Friends,
+api_fn! { DownloadClanActivityCounts(
+    &Friends,
     clan_id: u64,
     ids: *const i64,
     len: i32,
@@ -260,209 +252,118 @@ pub extern "C" fn SteamAPI_ISteamFriends_DownloadClanActivityCounts(
     debug!();
 
     0
-}
+} }
 
-#[no_mangle]
-pub extern "C" fn SteamAPI_ISteamFriends_GetFriendCountFromSource(
-    this: *const Friends,
+api_fn! { GetFriendCountFromSource(
+    &Friends,
     id: u64,
 ) -> i32 {
     debug!();
 
     0
-}
+} }
 
-#[no_mangle]
-pub extern "C" fn SteamAPI_ISteamFriends_IsUserInSource(
-    this: *const Friends,
+api_fn! { IsUserInSource(
+    &Friends,
     id: u64,
     id_source: u64,
 ) -> bool {
     debug!();
 
     false
-}
+} }
 
-#[no_mangle]
-pub extern "C" fn SteamAPI_ISteamFriends_SetInGameVoiceSpeaking(
-    this: *const Friends,
+api_fn! { SetInGameVoiceSpeaking(
+    &Friends,
     id: u64,
     speaking: bool,
-) {
+) -> () {
     debug!();
-}
+} }
 
-#[no_mangle]
-pub extern "C" fn SteamAPI_ISteamFriends_ActivateGameOverlay(
-    this: *const Friends,
+api_fn! { ActivateGameOverlay(
+    &Friends,
     pch_dialog: *const u8,
-) {
+) -> () {
     debug!();
-}
+} }
 
-#[no_mangle]
-pub extern "C" fn SteamAPI_ISteamFriends_ActivateGameOverlayToUser(
-    this: *const Friends,
+api_fn! { ActivateGameOverlayToUser(
+    &Friends,
     pch_dialog: *const u8,
     user_id: u64,
-) {
+) -> () {
     debug!();
-}
+} }
 
-#[no_mangle]
-pub extern "C" fn SteamAPI_ISteamFriends_ActivateGameOverlayToWebPage(
-    this: *const Friends,
+api_fn! { ActivateGameOverlayToWebPage(
+    &Friends,
     pch_url: *const u8,
-) {
+) -> () {
     debug!();
-}
+} }
 
-#[no_mangle]
-pub extern "C" fn SteamAPI_ISteamFriends_ActivateGameOverlayToStore(
-    this: *const Friends,
+api_fn! { ActivateGameOverlayToStore(
+    &Friends,
     app_id: i32,
     flag: i32,
-) {
+) -> () {
     debug!();
-}
+} }
 
-#[no_mangle]
-pub extern "C" fn SteamAPI_ISteamFriends_SetPlayedWith(this: *const Friends, user_id: i32) {
+api_fn! { SetPlayedWith(&Friends, user_id: i32) -> () {
     debug!();
-}
+} }
 
-#[no_mangle]
-pub extern "C" fn SteamAPI_ISteamFriends_ActivateGameOverlayInviteDialog(
-    this: *const Friends,
+api_fn! { ActivateGameOverlayInviteDialog(
+    &Friends,
     lobby_id: i32,
-) {
+) -> () {
     debug!();
-}
+} }
 
-#[no_mangle]
-pub extern "C" fn SteamAPI_ISteamFriends_GetSmallFriendAvatar(
-    this: *const Friends,
+api_fn! { GetSmallFriendAvatar(
+    &Friends,
     user_id: i32,
 ) -> i32 {
     debug!();
 
     0
-}
+} }
 
-#[no_mangle]
-pub extern "C" fn SteamAPI_ISteamFriends_GetMediumFriendAvatar(
-    this: *const Friends,
+api_fn! { GetMediumFriendAvatar(
+    &Friends,
     user_id: i32,
 ) -> i32 {
     debug!();
 
     0
-}
+} }
 
-#[no_mangle]
-pub extern "C" fn SteamAPI_ISteamFriends_GetLargeFriendAvatar(
-    this: *const Friends,
+api_fn! { GetLargeFriendAvatar(
+    &Friends,
     user_id: i32,
 ) -> i32 {
     debug!();
 
     0
-}
+} }
 
-#[no_mangle]
-pub extern "C" fn SteamAPI_ISteamFriends_RequestUserInformation(
-    this: *const Friends,
+api_fn! { RequestUserInformation(
+    &Friends,
     user_id: i32,
     require_name_only: bool,
 ) -> bool {
     debug!();
 
     false
-}
+} }
 
-#[no_mangle]
-pub extern "C" fn SteamAPI_ISteamFriends_RequestClanOfficerList(
-    this: *const Friends,
+api_fn! { RequestClanOfficerList(
+    &Friends,
     clan_id: i32,
 ) -> i32 {
     debug!();
 
     0
-}
-
-/*
-    // returns the steamID of the clan owner
-    virtual CSteamID GetClanOwner( CSteamID steamIDClan ) = 0;
-    // returns the number of officers in a clan (including the owner)
-    virtual int GetClanOfficerCount( CSteamID steamIDClan ) = 0;
-    // returns the steamID of a clan officer, by index, of range [0,GetClanOfficerCount)
-    virtual CSteamID GetClanOfficerByIndex( CSteamID steamIDClan, int iOfficer ) = 0;
-    // if current user is chat restricted, he can't send or receive any text/voice chat messages.
-    // the user can't see custom avatars. But the user can be online and send/recv game invites.
-    // a chat restricted user can't add friends or join any groups.
-    virtual uint32 GetUserRestrictions() = 0;
-
-    // Rich Presence data is automatically shared between friends who are in the same game
-    // Each user has a set of Key/Value pairs
-    // Up to 20 different keys can be set
-    // There are two magic keys:
-    //		"status"  - a UTF-8 string that will show up in the 'view game info' dialog in the Steam friends list
-    //		"connect" - a UTF-8 string that contains the command-line for how a friend can connect to a game
-    // GetFriendRichPresence() returns an empty string "" if no value is set
-    // SetRichPresence() to a NULL or an empty string deletes the key
-    // You can iterate the current set of keys for a friend with GetFriendRichPresenceKeyCount()
-    // and GetFriendRichPresenceKeyByIndex() (typically only used for debugging)
-    virtual bool SetRichPresence( const char *pchKey, const char *pchValue ) = 0;
-    virtual void ClearRichPresence() = 0;
-    virtual const char *GetFriendRichPresence( CSteamID steamIDFriend, const char *pchKey ) = 0;
-    virtual int GetFriendRichPresenceKeyCount( CSteamID steamIDFriend ) = 0;
-    virtual const char *GetFriendRichPresenceKeyByIndex( CSteamID steamIDFriend, int iKey ) = 0;
-    // Requests rich presence for a specific user.
-    virtual void RequestFriendRichPresence( CSteamID steamIDFriend ) = 0;
-
-    // rich invite support
-    // if the target accepts the invite, the pchConnectString gets added to the command-line for launching the game
-    // if the game is already running, a GameRichPresenceJoinRequested_t callback is posted containing the connect string
-    // invites can only be sent to friends
-    virtual bool InviteUserToGame( CSteamID steamIDFriend, const char *pchConnectString ) = 0;
-
-    // recently-played-with friends iteration
-    // this iterates the entire list of users recently played with, across games
-    // GetFriendCoplayTime() returns as a unix time
-    virtual int GetCoplayFriendCount() = 0;
-    virtual CSteamID GetCoplayFriend( int iCoplayFriend ) = 0;
-    virtual int GetFriendCoplayTime( CSteamID steamIDFriend ) = 0;
-    virtual AppId_t GetFriendCoplayGame( CSteamID steamIDFriend ) = 0;
-
-    // chat interface for games
-    // this allows in-game access to group (clan) chats from in the game
-    // the behavior is somewhat sophisticated, because the user may or may not be already in the group chat from outside the game or in the overlay
-    // use ActivateGameOverlayToUser( "chat", steamIDClan ) to open the in-game overlay version of the chat
-    CALL_RESULT( JoinClanChatRoomCompletionResult_t )
-    virtual SteamAPICall_t JoinClanChatRoom( CSteamID steamIDClan ) = 0;
-    virtual bool LeaveClanChatRoom( CSteamID steamIDClan ) = 0;
-    virtual int GetClanChatMemberCount( CSteamID steamIDClan ) = 0;
-    virtual CSteamID GetChatMemberByIndex( CSteamID steamIDClan, int iUser ) = 0;
-    virtual bool SendClanChatMessage( CSteamID steamIDClanChat, const char *pchText ) = 0;
-    virtual int GetClanChatMessage( CSteamID steamIDClanChat, int iMessage, void *prgchText, int cchTextMax, EChatEntryType *peChatEntryType, OUT_STRUCT() CSteamID *psteamidChatter ) = 0;
-    virtual bool IsClanChatAdmin( CSteamID steamIDClanChat, CSteamID steamIDUser ) = 0;
-
-    // interact with the Steam (game overlay / desktop)
-    virtual bool IsClanChatWindowOpenInSteam( CSteamID steamIDClanChat ) = 0;
-    virtual bool OpenClanChatWindowInSteam( CSteamID steamIDClanChat ) = 0;
-    virtual bool CloseClanChatWindowInSteam( CSteamID steamIDClanChat ) = 0;
-
-    // peer-to-peer chat interception
-    // this is so you can show P2P chats inline in the game
-    virtual bool SetListenForFriendsMessages( bool bInterceptEnabled ) = 0;
-    virtual bool ReplyToFriendMessage( CSteamID steamIDFriend, const char *pchMsgToSend ) = 0;
-    virtual int GetFriendMessage( CSteamID steamIDFriend, int iMessageID, void *pvData, int cubData, EChatEntryType *peChatEntryType ) = 0;
-
-    // following apis
-    CALL_RESULT( FriendsGetFollowerCount_t )
-    virtual SteamAPICall_t GetFollowerCount( CSteamID steamID ) = 0;
-    CALL_RESULT( FriendsIsFollowing_t )
-    virtual SteamAPICall_t IsFollowing( CSteamID steamID ) = 0;
-    CALL_RESULT( FriendsEnumerateFollowingList_t )
-    virtual SteamAPICall_t EnumerateFollowingList( uint32 unStartIndex ) = 0;
-*/
+} }

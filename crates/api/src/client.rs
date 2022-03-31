@@ -16,7 +16,7 @@ virtual_struct! { Client {
     fn get_game_server(&self, pipe_handle: PipeHandle, user_handle: UserHandle, pch_version: *const u8) -> *const GameServer,
     fn set_local_ip_binding(&self, ip: u32, port: u16) ->(),
     fn get_friends(&self, pipe_handle: PipeHandle, user_handle: UserHandle, pch_version: *const u8) -> *const Friends,
-    fn get_utils(&self, pipe_handle: PipeHandle, user_handle: UserHandle, pch_version: *const u8) -> *const Utils,
+    fn get_utils(&self, pipe_handle: PipeHandle, pch_version: *const u8) -> *const Utils,
     fn get_matchmaking(&self, pipe_handle: PipeHandle, user_handle: UserHandle, pch_version: *const u8) -> *const Matchmaking,
     fn get_matchmaking_servers(&self, pipe_handle: PipeHandle, user_handle: UserHandle, pch_version: *const u8) -> *const MatchmakingServers,
     fn get_generic_interface(&self, pipe_handle: PipeHandle, user_handle: UserHandle, pch_version: *const u8) -> *const (),
@@ -156,19 +156,17 @@ api_fn! { GetISteamFriends(
 
 api_fn! { GetISteamUtils(
     &Client,
-    user_handle: UserHandle,
     pipe_handle: PipeHandle,
     pch_version: *const u8,
 ) -> *const Utils {
     debug!();
 
-    println!("user_handle = {user_handle:?}");
     println!("pipe_handle = {pipe_handle:?}");
     println!("pch_version = {:?}", unsafe {
         CStr::from_ptr(pch_version.cast())
     });
 
-    ptr::null()
+    &super::FAKE_UTILS
 } }
 
 api_fn! { GetISteamMatchmaking(
@@ -185,7 +183,7 @@ api_fn! { GetISteamMatchmaking(
         CStr::from_ptr(pch_version.cast())
     });
 
-    ptr::null()
+    &super::FAKE_MATCHMAKING
 } }
 
 api_fn! { GetISteamMatchmakingServers(
@@ -202,7 +200,7 @@ api_fn! { GetISteamMatchmakingServers(
         CStr::from_ptr(pch_version.cast())
     });
 
-    ptr::null()
+    &super::FAKE_MATCHMAKING_SERVERS
 } }
 
 api_fn! { GetISteamGenericInterface(
@@ -236,7 +234,7 @@ api_fn! { GetISteamUserStats(
         CStr::from_ptr(pch_version.cast())
     });
 
-    ptr::null()
+    &super::FAKE_USER_STATS
 } }
 
 api_fn! { GetISteamGameServerStats(
@@ -270,7 +268,7 @@ api_fn! { GetISteamApps(
         CStr::from_ptr(pch_version.cast())
     });
 
-    ptr::null()
+    &super::FAKE_APPS
 } }
 
 api_fn! { GetISteamNetworking(
@@ -287,7 +285,7 @@ api_fn! { GetISteamNetworking(
         CStr::from_ptr(pch_version.cast())
     });
 
-    ptr::null()
+    &super::FAKE_NETWORKING
 } }
 
 api_fn! { GetISteamRemoteStorage(
@@ -304,7 +302,7 @@ api_fn! { GetISteamRemoteStorage(
         CStr::from_ptr(pch_version.cast())
     });
 
-    ptr::null()
+    &super::FAKE_REMOTE_STORAGE
 } }
 
 api_fn! { GetISteamScreenshots(
@@ -321,5 +319,5 @@ api_fn! { GetISteamScreenshots(
         CStr::from_ptr(pch_version.cast())
     });
 
-    ptr::null()
+    &super::FAKE_SCREENSHOTS
 } }

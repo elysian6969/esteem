@@ -1,4 +1,4 @@
-use super::{debug, virtual_struct, UserHandle};
+use super::{api_fn, debug, virtual_struct, UserHandle};
 use core::ptr;
 
 virtual_struct! { User {
@@ -63,30 +63,30 @@ impl User {
     }
 }
 
-#[no_mangle]
-pub extern "C" fn SteamAPI_ISteamUser_GetHSteamUser(this: *const User) -> UserHandle {
+api_fn! { GetHSteamUser(&User) -> UserHandle {
     debug!();
 
     69
-}
+} }
 
-#[no_mangle]
-pub extern "C" fn SteamAPI_ISteamUser_BLoggedOn(this: *const User) -> bool {
+api_fn! { BLoggedOn(&User) -> bool {
     debug!();
 
     true
-}
+} }
 
-#[no_mangle]
-pub extern "C" fn SteamAPI_ISteamUser_GetSteamID(this: *const User) -> u64 {
+api_fn! { GetSteamID(&User) -> u64 {
     debug!();
 
-    69
-}
+    let id = 76561199254102667;
 
-#[no_mangle]
-pub extern "C" fn SteamAPI_ISteamUser_InitiateGameConnection(
-    this: *const User,
+    println!("id = {id:?}");
+
+    id
+} }
+
+api_fn! { InitiateGameConnection(
+    &User,
     auth_blob: *const (),
     auth_blob_max: i32,
     steam_id_game_server: u64,
@@ -97,30 +97,28 @@ pub extern "C" fn SteamAPI_ISteamUser_InitiateGameConnection(
     debug!();
 
     69
-}
+} }
 
-#[no_mangle]
-extern "C" fn SteamAPI_ISteamUser_TerminateGameConnection(this: *const User, ip: u32, port: u16) {
+api_fn! { TerminateGameConnection(&User, ip: u32, port: u16) -> () {
     debug!();
-}
+} }
 
-#[no_mangle]
-extern "C" fn SteamAPI_ISteamUser_TrackAppUsageEvent(
-    this: *const User,
+api_fn! { TrackAppUsageEvent(
+    &User,
     game_id: u64,
     app_usage_event: i32,
     pch_extra_info: *const u8,
-) {
+) -> () {
     debug!();
-}
+} }
 
-#[no_mangle]
-extern "C" fn SteamAPI_ISteamUser_GetUserDataFolder(
-    this: *const User,
+api_fn! { GetUserDataFolder(
+    &User,
     pch_buffer: *mut u8,
     cub_buffer: i32,
 ) -> bool {
     debug!();
+
     let path = "/tmp/steamapi";
 
     unsafe {
@@ -128,21 +126,18 @@ extern "C" fn SteamAPI_ISteamUser_GetUserDataFolder(
     }
 
     true
-}
+} }
 
-#[no_mangle]
-pub extern "C" fn SteamAPI_ISteamUser_StartVoiceRecording(this: *const User) {
+api_fn! { StartVoiceRecording(&User) -> () {
     debug!();
-}
+} }
 
-#[no_mangle]
-pub extern "C" fn SteamAPI_ISteamUser_StopVoiceRecording(this: *const User) {
+api_fn! { StopVoiceRecording(&User) -> () {
     debug!();
-}
+} }
 
-#[no_mangle]
-pub extern "C" fn SteamAPI_ISteamUser_GetAvailableVoice(
-    this: *const User,
+api_fn! { GetAvailableVoice(
+    &User,
     pcb_compressed: *const u32,
     pcb_uncompressed: *const u32,
     uncompressed_voice_desired_sample_rate: u32,
@@ -150,11 +145,10 @@ pub extern "C" fn SteamAPI_ISteamUser_GetAvailableVoice(
     debug!();
 
     0
-}
+} }
 
-#[no_mangle]
-pub extern "C" fn SteamAPI_ISteamUser_GetVoice(
-    this: *const User,
+api_fn! { GetVoice(
+    &User,
     want_compressed: bool,
     dst_buf: *mut (),
     dst_buf_len: u32,
@@ -168,11 +162,10 @@ pub extern "C" fn SteamAPI_ISteamUser_GetVoice(
     debug!();
 
     0
-}
+} }
 
-#[no_mangle]
-pub extern "C" fn SteamAPI_ISteamUser_DecompressVoice(
-    this: *const User,
+api_fn! { DecompressVoice(
+    &User,
     compressed_buf: *const (),
     compressed: u32,
     dst_buf: *mut (),
@@ -183,18 +176,16 @@ pub extern "C" fn SteamAPI_ISteamUser_DecompressVoice(
     debug!();
 
     0
-}
+} }
 
-#[no_mangle]
-pub extern "C" fn SteamAPI_ISteamUser_GetVoiceOptimalSampleRate(this: *const User) -> u32 {
+api_fn! { GetVoiceOptimalSampleRate(&User) -> u32 {
     debug!();
 
     0
-}
+} }
 
-#[no_mangle]
-pub extern "C" fn SteamAPI_ISteamUser_GetAuthSessionTicket(
-    this: *const User,
+api_fn! { GetAuthSessionTicket(
+    &User,
     ticket: *const (),
     auth_ticket: *const (),
     pcb_ticket: *const u32,
@@ -202,51 +193,53 @@ pub extern "C" fn SteamAPI_ISteamUser_GetAuthSessionTicket(
     debug!();
 
     0
-}
+} }
 
-#[no_mangle]
-pub extern "C" fn SteamAPI_ISteamUser_BeginAuthSession(
-    this: *const User,
+api_fn! { BeginAuthSession(
+    &User,
     auth_ticket: *const (),
     auth_ticket_len: i32,
     steam_id: i32,
 ) -> i32 {
     debug!();
 
+        println!("auth_ticket = {auth_ticket:?}");
+        println!("auth_ticket_len = {auth_ticket_len:?}");
+        println!("steam_id = {steam_id:?}");
+
     0
-}
+} }
 
-#[no_mangle]
-pub extern "C" fn SteamAPI_ISteamUser_EndAuthSession(this: *const User, steam_id: i32) {
+api_fn! { EndAuthSession(&User, steam_id: i32) -> () {
     debug!();
-}
 
-#[no_mangle]
-pub extern "C" fn SteamAPI_ISteamUser_CancelAuthTicket(this: *const User, auth_ticket_handle: i32) {
+        println!("steam_id = {steam_id:?}");
+} }
+
+api_fn! { CancelAuthTicket(&User, auth_ticket_handle: i32) -> () {
     debug!();
-}
 
-#[no_mangle]
-pub extern "C" fn SteamAPI_ISteamUser_UserHasLicenseForApp(
-    this: *const User,
+        println!("auth_ticket_handle = {auth_ticket_handle:?}");
+} }
+
+api_fn! { UserHasLicenseForApp(
+    &User,
     steam_id: i32,
     app_id: i32,
 ) -> i32 {
     debug!();
 
     0
-}
+} }
 
-#[no_mangle]
-pub extern "C" fn SteamAPI_ISteamUser_BIsBehindNAT(this: *const User) -> bool {
+api_fn! { BIsBehindNAT(&User) -> bool {
     debug!();
 
     true
-}
+} }
 
-#[no_mangle]
-pub extern "C" fn SteamAPI_ISteamUser_AdvertiseGame(
-    this: *const User,
+api_fn! { AdvertiseGame(
+    &User,
     game_server_id: u32,
     ip: u32,
     port: u16,
@@ -254,22 +247,20 @@ pub extern "C" fn SteamAPI_ISteamUser_AdvertiseGame(
     debug!();
 
     false
-}
+} }
 
-#[no_mangle]
-pub extern "C" fn SteamAPI_ISteamUser_RequestEncryptedAppTicket(
-    this: *const User,
+api_fn! { RequestEncryptedAppTicket(
+    &User,
     data_to_include: *const (),
     data_to_include_len: i32,
 ) -> i32 {
     debug!();
 
     0
-}
+} }
 
-#[no_mangle]
-pub extern "C" fn SteamAPI_ISteamUser_GetEncryptedAppTicket(
-    this: *const User,
+api_fn! { GetEncryptedAppTicket(
+    &User,
     ticket: *const (),
     max_ticket: i32,
     pcb_ticket: *const u32,
@@ -277,32 +268,29 @@ pub extern "C" fn SteamAPI_ISteamUser_GetEncryptedAppTicket(
     debug!();
 
     false
-}
+} }
 
-#[no_mangle]
-pub extern "C" fn SteamAPI_ISteamUser_GetGameBadgeLevel(
-    this: *const User,
+api_fn! { GetGameBadgeLevel(
+    &User,
     series: i32,
     foil: i32,
 ) -> i32 {
     debug!();
 
     0
-}
+} }
 
-#[no_mangle]
-pub extern "C" fn SteamAPI_ISteamUser_GetPlayerSteamLevel(this: *const User) -> i32 {
+api_fn! { GetPlayerSteamLevel(&User) -> i32 {
     debug!();
 
     0
-}
+} }
 
-#[no_mangle]
-pub extern "C" fn SteamAPI_ISteamUser_RequestStoreAuthURL(
-    this: *const User,
+api_fn! { RequestStoreAuthURL(
+    &User,
     pch_redirect_url: *const u8,
 ) -> i32 {
     debug!();
 
     0
-}
+} }
