@@ -1,5 +1,4 @@
 use super::{api_fn, debug, virtual_struct};
-use core::ptr;
 
 virtual_struct! { Apps {
     fn is_subscribed(&self) -> bool,

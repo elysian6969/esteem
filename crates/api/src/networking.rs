@@ -1,5 +1,4 @@
 use super::{api_fn, debug, virtual_struct};
-use core::ptr;
 
 virtual_struct! { Networking {
     fn send_p2p_packet(&self, remote_id: u64, pub_data: *const (), cub_data: u32, p2p_send_kind: u8, channel: i32) -> bool,

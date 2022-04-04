@@ -104,7 +104,9 @@ api_fn! { GetFriendPersonaName(
 ) -> *const u8 {
     debug!();
 
-    ptr::null()
+    let name = "rust\0";
+
+    name.as_ptr()
 } }
 
 api_fn! { GetFriendGamePlayed(

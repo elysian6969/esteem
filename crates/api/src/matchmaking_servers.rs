@@ -1,5 +1,4 @@
-use super::{api_fn, debug, virtual_struct};
-use core::ptr;
+use super::virtual_struct;
 
 virtual_struct! { MatchmakingServers {
 

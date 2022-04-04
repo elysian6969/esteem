@@ -1,5 +1,4 @@
 use super::{api_fn, debug, virtual_struct, Universe};
-use core::ptr;
 
 virtual_struct! { Utils {
     fn get_seconds_since_app_active(&self) -> u32,
