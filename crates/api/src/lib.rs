@@ -1,8 +1,5 @@
 #![allow(unused_variables)]
 #![feature(const_fn_fn_ptr_basics)]
-#![feature(const_slice_from_raw_parts)]
-#![feature(const_type_name)]
-#![feature(type_name_of_val)]
 
 use std::ffi::CStr;
 
@@ -11,6 +8,8 @@ pub use apps::Apps;
 pub use client::Client;
 pub use error::Error;
 pub use friends::Friends;
+pub use game_server::GameServer;
+pub use game_server_stats::GameServerStats;
 pub use matchmaking::Matchmaking;
 pub use matchmaking_servers::MatchmakingServers;
 pub use networking::Networking;
@@ -28,6 +27,8 @@ mod universe;
 pub mod apps;
 pub mod client;
 pub mod friends;
+pub mod game_server;
+pub mod game_server_stats;
 pub mod matchmaking;
 pub mod matchmaking_servers;
 pub mod networking;
@@ -42,9 +43,14 @@ pub(crate) mod macros;
 pub type PipeHandle = i32;
 pub type UserHandle = i32;
 
+// im sick of doing this
+pub static P100_FAKE: usize = 69420;
+
 pub static FAKE_APPS: Apps = Apps::new();
 pub static FAKE_CLIENT: Client = Client::new();
 pub static FAKE_FRIENDS: Friends = Friends::new();
+pub static FAKE_GAME_SERVER: GameServer = GameServer::new();
+pub static FAKE_GAME_SERVER_STATS: GameServerStats = GameServerStats::new();
 pub static FAKE_MATCHMAKING: Matchmaking = Matchmaking::new();
 pub static FAKE_MATCHMAKING_SERVERS: MatchmakingServers = MatchmakingServers::new();
 pub static FAKE_NETWORKING: Networking = Networking::new();
@@ -53,12 +59,6 @@ pub static FAKE_SCREENSHOTS: Screenshots = Screenshots::new();
 pub static FAKE_USER: User = User::new();
 pub static FAKE_USER_STATS: UserStats = UserStats::new();
 pub static FAKE_UTILS: Utils = Utils::new();
-
-#[repr(C)]
-pub struct GameServer {}
-
-#[repr(C)]
-pub struct GameServerStats {}
 
 #[no_mangle]
 pub extern "C" fn SteamAPI_GetHSteamPipe(this: *const Client) -> PipeHandle {
@@ -186,6 +186,11 @@ pub extern "C" fn SteamInternal_CreateInterface(version: *const u8) -> *const Cl
     println!("version = {:?}", unsafe { CStr::from_ptr(version.cast()) });
 
     &FAKE_CLIENT
+}
+
+#[no_mangle]
+pub extern "C" fn SteamGameServerInternal_CreateInterface(ver: *const u8) {
+    debug!();
 }
 
 #[no_mangle]

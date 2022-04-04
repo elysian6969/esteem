@@ -26,6 +26,26 @@ virtual_struct! { Client {
     fn get_networking(&self, pipe_handle: PipeHandle, user_handle: UserHandle, pch_version: *const u8) -> *const Networking,
     fn get_remote_storage(&self, pipe_handle: PipeHandle, user_handle: UserHandle, pch_version: *const u8) -> *const RemoteStorage,
     fn get_screenshots(&self, pipe_handle: PipeHandle, user_handle: UserHandle, pch_version: *const u8) -> *const Screenshots,
+    fn run_frame(&self) -> (),
+    fn get_ipc_call_count(&self) -> u32,
+    fn set_warning_message_hook(&self, hook: usize) -> (),
+    fn shutdown_if_all_pipes_closed(&self) -> (),
+    fn get_http(&self, pipe_handle: PipeHandle, user_handle: UserHandle, pch_version: *const u8) -> *const (),
+    fn get_unified_messages(&self, pipe_handle: PipeHandle, user_handle: UserHandle, pch_version: *const u8) -> *const (),
+    fn get_controller(&self, pipe_handle: PipeHandle, user_handle: UserHandle, pch_version: *const u8) -> *const (),
+    fn get_ugc(&self, pipe_handle: PipeHandle, user_handle: UserHandle, pch_version: *const u8) -> *const (),
+    fn get_app_list(&self, pipe_handle: PipeHandle, user_handle: UserHandle, pch_version: *const u8) -> *const (),
+    fn get_music(&self, pipe_handle: PipeHandle, user_handle: UserHandle, pch_version: *const u8) -> *const (),
+    fn get_music_remote(&self, pipe_handle: PipeHandle, user_handle: UserHandle, pch_version: *const u8) -> *const (),
+    fn get_html_surface(&self, pipe_handle: PipeHandle, user_handle: UserHandle, pch_version: *const u8) -> *const (),
+    // depreciated
+    fn sst_post_api_result_in_progress(&self, cb: usize) -> (),
+    // depreciated
+    fn remove_post_api_result_in_progress(&self, cb: usize) -> (),
+    // depreciated
+    fn check_callback_registered_in_progress(&self, cb: usize) -> (),
+    fn get_inventory(&self, pipe_handle: PipeHandle, user_handle: UserHandle, pch_version: *const u8) -> *const (),
+    fn get_video(&self, pipe_handle: PipeHandle, user_handle: UserHandle, pch_version: *const u8) -> *const (),
 } }
 
 impl Client {
@@ -51,6 +71,23 @@ impl Client {
                 get_networking: SteamAPI_ISteamClient_GetISteamNetworking,
                 get_remote_storage: SteamAPI_ISteamClient_GetISteamRemoteStorage,
                 get_screenshots: SteamAPI_ISteamClient_GetISteamScreenshots,
+                run_frame: SteamAPI_ISteamClient_RunFrame,
+                get_ipc_call_count: SteamAPI_ISteamClient_GetIPCCallCount,
+                set_warning_message_hook: SteamAPI_ISteamClient_SetWarningMessageHook,
+                shutdown_if_all_pipes_closed: SteamAPI_ISteamClient_BShutdownIfAllPipesClosed,
+                get_http: SteamAPI_ISteamClient_GetISteamHTTP,
+                get_unified_messages: SteamAPI_ISteamClient_GetISteamUnifiedMessages,
+                get_controller: SteamAPI_ISteamClient_GetISteamController,
+                get_ugc: SteamAPI_ISteamClient_GetISteamUGC,
+                get_app_list: SteamAPI_ISteamClient_GetISteamAppList,
+                get_music: SteamAPI_ISteamClient_GetISteamMusic,
+                get_music_remote: SteamAPI_ISteamClient_GetISteamMusicRemote,
+                get_html_surface: SteamAPI_ISteamClient_GetISteamHTMLSurface,
+                sst_post_api_result_in_progress: depreciated_cb,
+                remove_post_api_result_in_progress: depreciated_cb,
+                check_callback_registered_in_progress: depreciated_cb,
+                get_inventory: SteamAPI_ISteamClient_GetISteamInventory,
+                get_video: SteamAPI_ISteamClient_GetISteamVideo,
             },
         }
     }
@@ -130,7 +167,7 @@ api_fn! { GetISteamGameServer(
     println!("user_handle = {user_handle:?}");
     println!("pipe_handle = {pipe_handle:?}");
 
-    ptr::null()
+    &super::FAKE_GAME_SERVER
 } }
 
 api_fn! { SetLocalIPBinding(&Client, ip: u32, port: u16) -> () {
@@ -251,7 +288,7 @@ api_fn! { GetISteamGameServerStats(
         CStr::from_ptr(pch_version.cast())
     });
 
-    ptr::null()
+    &super::FAKE_GAME_SERVER_STATS
 } }
 
 api_fn! { GetISteamApps(
@@ -320,4 +357,196 @@ api_fn! { GetISteamScreenshots(
     });
 
     &super::FAKE_SCREENSHOTS
+} }
+
+api_fn! { RunFrame(&Client) -> () {
+    debug!();
+} }
+
+api_fn! { GetIPCCallCount(&Client) -> u32 {
+    debug!();
+
+    69
+} }
+
+api_fn! { SetWarningMessageHook(&Client, hook: usize) -> () {
+    debug!();
+} }
+
+api_fn! { BShutdownIfAllPipesClosed(&Client) -> () {
+    debug!();
+} }
+
+api_fn! { GetISteamHTTP(
+    &Client,
+    user_handle: UserHandle,
+    pipe_handle: PipeHandle,
+    pch_version: *const u8,
+) -> *const () {
+    debug!();
+
+    println!("user_handle = {user_handle:?}");
+    println!("pipe_handle = {pipe_handle:?}");
+    println!("pch_version = {:?}", unsafe {
+        CStr::from_ptr(pch_version.cast())
+    });
+
+    &super::P100_FAKE as *const usize as *const ()
+} }
+
+api_fn! { GetISteamUnifiedMessages(
+    &Client,
+    user_handle: UserHandle,
+    pipe_handle: PipeHandle,
+    pch_version: *const u8,
+) -> *const () {
+    debug!();
+
+    println!("user_handle = {user_handle:?}");
+    println!("pipe_handle = {pipe_handle:?}");
+    println!("pch_version = {:?}", unsafe {
+        CStr::from_ptr(pch_version.cast())
+    });
+
+    &super::P100_FAKE as *const usize as *const ()
+} }
+
+api_fn! { GetISteamController(
+    &Client,
+    user_handle: UserHandle,
+    pipe_handle: PipeHandle,
+    pch_version: *const u8,
+) -> *const () {
+    debug!();
+
+    println!("user_handle = {user_handle:?}");
+    println!("pipe_handle = {pipe_handle:?}");
+    println!("pch_version = {:?}", unsafe {
+        CStr::from_ptr(pch_version.cast())
+    });
+
+    &super::P100_FAKE as *const usize as *const ()
+} }
+
+api_fn! { GetISteamUGC(
+    &Client,
+    user_handle: UserHandle,
+    pipe_handle: PipeHandle,
+    pch_version: *const u8,
+) -> *const () {
+    debug!();
+
+    println!("user_handle = {user_handle:?}");
+    println!("pipe_handle = {pipe_handle:?}");
+    println!("pch_version = {:?}", unsafe {
+        CStr::from_ptr(pch_version.cast())
+    });
+
+    &super::P100_FAKE as *const usize as *const ()
+} }
+
+api_fn! { GetISteamAppList(
+    &Client,
+    user_handle: UserHandle,
+    pipe_handle: PipeHandle,
+    pch_version: *const u8,
+) -> *const () {
+    debug!();
+
+    println!("user_handle = {user_handle:?}");
+    println!("pipe_handle = {pipe_handle:?}");
+    println!("pch_version = {:?}", unsafe {
+        CStr::from_ptr(pch_version.cast())
+    });
+
+    &super::P100_FAKE as *const usize as *const ()
+} }
+
+api_fn! { GetISteamMusic(
+    &Client,
+    user_handle: UserHandle,
+    pipe_handle: PipeHandle,
+    pch_version: *const u8,
+) -> *const () {
+    debug!();
+
+    println!("user_handle = {user_handle:?}");
+    println!("pipe_handle = {pipe_handle:?}");
+    println!("pch_version = {:?}", unsafe {
+        CStr::from_ptr(pch_version.cast())
+    });
+
+    &super::P100_FAKE as *const usize as *const ()
+} }
+
+api_fn! { GetISteamMusicRemote(
+    &Client,
+    user_handle: UserHandle,
+    pipe_handle: PipeHandle,
+    pch_version: *const u8,
+) -> *const () {
+    debug!();
+
+    println!("user_handle = {user_handle:?}");
+    println!("pipe_handle = {pipe_handle:?}");
+    println!("pch_version = {:?}", unsafe {
+        CStr::from_ptr(pch_version.cast())
+    });
+
+    &super::P100_FAKE as *const usize as *const ()
+} }
+
+api_fn! { GetISteamHTMLSurface(
+    &Client,
+    user_handle: UserHandle,
+    pipe_handle: PipeHandle,
+    pch_version: *const u8,
+) -> *const () {
+    debug!();
+
+    println!("user_handle = {user_handle:?}");
+    println!("pipe_handle = {pipe_handle:?}");
+    println!("pch_version = {:?}", unsafe {
+        CStr::from_ptr(pch_version.cast())
+    });
+
+    &super::P100_FAKE as *const usize as *const ()
+} }
+
+extern "C" fn depreciated_cb(this: *const Client, cb: usize) {
+    debug!();
+}
+
+api_fn! { GetISteamInventory(
+    &Client,
+    user_handle: UserHandle,
+    pipe_handle: PipeHandle,
+    pch_version: *const u8,
+) -> *const () {
+    debug!();
+
+    println!("user_handle = {user_handle:?}");
+    println!("pipe_handle = {pipe_handle:?}");
+    println!("pch_version = {:?}", unsafe {
+        CStr::from_ptr(pch_version.cast())
+    });
+
+    &super::P100_FAKE as *const usize as *const ()
+} }
+
+api_fn! { GetISteamVideo(
+    &Client,
+    user_handle: UserHandle,
+    pipe_handle: PipeHandle,
+    pch_version: *const u8,
+) -> *const () {
+    debug!();
+
+    println!("user_handle = {user_handle:?}");
+    println!("pipe_handle = {pipe_handle:?}");
+    println!("pch_version = {:?}", unsafe {
+        CStr::from_ptr(pch_version.cast())
+    });
+
+    &super::P100_FAKE as *const usize as *const ()
 } }
