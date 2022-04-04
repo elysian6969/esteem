@@ -30,19 +30,7 @@ macro_rules! api_fn {
 #[macro_export]
 macro_rules! debug {
     () => {{
-        use core::{any, slice, str};
-
-        fn a() {}
-
-        const FULL_NAME: &str = any::type_name_of_val(&a);
-        const NAME: &str = unsafe {
-            str::from_utf8_unchecked(slice::from_raw_parts(
-                FULL_NAME.as_ptr(),
-                FULL_NAME.len().saturating_sub(3),
-            ))
-        };
-
-        println!("{NAME}");
+        println!("{}", frosting::function!());
     }};
 }
 

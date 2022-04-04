@@ -3,8 +3,12 @@ edition = "2021"
 name = "steam_api"
 version = "0.0.0"
 
-[dependencies]
-paste = "1.0"
+# keep this here, ill add vtable macro stuff in this lib, too
+[dependencies.frosting]
+git = "https://github.com/mov-rax-rax/frosting.git"
+
+[dependencies.paste]
+version = "1.0"
 
 [lib]
 crate-type = ["cdylib"]
