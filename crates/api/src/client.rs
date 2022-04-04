@@ -1,7 +1,7 @@
 use super::{
     api_fn, debug, virtual_struct, AccountKind, Apps, Controller, Friends, GameServer,
-    GameServerStats, Matchmaking, MatchmakingServers, Networking, PipeHandle, RemoteStorage,
-    Screenshots, User, UserHandle, UserStats, Utils,
+    GameServerStats, HTMLSurface, Matchmaking, MatchmakingServers, Networking, PipeHandle,
+    RemoteStorage, Screenshots, User, UserHandle, UserStats, Utils,
 };
 use core::ptr;
 use std::ffi::CStr;
@@ -37,7 +37,7 @@ virtual_struct! { Client {
     fn get_app_list(&self, pipe_handle: PipeHandle, user_handle: UserHandle, pch_version: *const u8) -> *const (),
     fn get_music(&self, pipe_handle: PipeHandle, user_handle: UserHandle, pch_version: *const u8) -> *const (),
     fn get_music_remote(&self, pipe_handle: PipeHandle, user_handle: UserHandle, pch_version: *const u8) -> *const (),
-    fn get_html_surface(&self, pipe_handle: PipeHandle, user_handle: UserHandle, pch_version: *const u8) -> *const (),
+    fn get_html_surface(&self, pipe_handle: PipeHandle, user_handle: UserHandle, pch_version: *const u8) -> *const HTMLSurface,
     // depreciated
     fn sst_post_api_result_in_progress(&self, cb: usize) -> (),
     // depreciated
@@ -501,7 +501,7 @@ api_fn! { GetISteamHTMLSurface(
     user_handle: UserHandle,
     pipe_handle: PipeHandle,
     pch_version: *const u8,
-) -> *const () {
+) -> *const HTMLSurface {
     debug!();
 
     println!("user_handle = {user_handle:?}");
@@ -510,7 +510,7 @@ api_fn! { GetISteamHTMLSurface(
         CStr::from_ptr(pch_version.cast())
     });
 
-    &super::P100_FAKE as *const usize as *const ()
+    &super::FAKE_HTML_SURFACE
 } }
 
 extern "C" fn depreciated_cb(this: *const Client, cb: usize) {
