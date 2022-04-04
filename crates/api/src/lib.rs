@@ -6,6 +6,7 @@ use std::ffi::CStr;
 pub use account_kind::AccountKind;
 pub use apps::Apps;
 pub use client::Client;
+pub use controller::Controller;
 pub use error::Error;
 pub use friends::Friends;
 pub use game_server::GameServer;
@@ -26,6 +27,7 @@ mod universe;
 
 pub mod apps;
 pub mod client;
+pub mod controller;
 pub mod friends;
 pub mod game_server;
 pub mod game_server_stats;
@@ -48,6 +50,7 @@ pub static P100_FAKE: usize = 69420;
 
 pub static FAKE_APPS: Apps = Apps::new();
 pub static FAKE_CLIENT: Client = Client::new();
+pub static FAKE_CONTROLLER: Controller = Controller::new();
 pub static FAKE_FRIENDS: Friends = Friends::new();
 pub static FAKE_GAME_SERVER: GameServer = GameServer::new();
 pub static FAKE_GAME_SERVER_STATS: GameServerStats = GameServerStats::new();

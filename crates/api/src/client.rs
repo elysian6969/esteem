@@ -1,7 +1,7 @@
 use super::{
-    api_fn, debug, virtual_struct, AccountKind, Apps, Friends, GameServer, GameServerStats,
-    Matchmaking, MatchmakingServers, Networking, PipeHandle, RemoteStorage, Screenshots, User,
-    UserHandle, UserStats, Utils,
+    api_fn, debug, virtual_struct, AccountKind, Apps, Controller, Friends, GameServer,
+    GameServerStats, Matchmaking, MatchmakingServers, Networking, PipeHandle, RemoteStorage,
+    Screenshots, User, UserHandle, UserStats, Utils,
 };
 use core::ptr;
 use std::ffi::CStr;
@@ -32,7 +32,7 @@ virtual_struct! { Client {
     fn shutdown_if_all_pipes_closed(&self) -> (),
     fn get_http(&self, pipe_handle: PipeHandle, user_handle: UserHandle, pch_version: *const u8) -> *const (),
     fn get_unified_messages(&self, pipe_handle: PipeHandle, user_handle: UserHandle, pch_version: *const u8) -> *const (),
-    fn get_controller(&self, pipe_handle: PipeHandle, user_handle: UserHandle, pch_version: *const u8) -> *const (),
+    fn get_controller(&self, pipe_handle: PipeHandle, user_handle: UserHandle, pch_version: *const u8) -> *const Controller,
     fn get_ugc(&self, pipe_handle: PipeHandle, user_handle: UserHandle, pch_version: *const u8) -> *const (),
     fn get_app_list(&self, pipe_handle: PipeHandle, user_handle: UserHandle, pch_version: *const u8) -> *const (),
     fn get_music(&self, pipe_handle: PipeHandle, user_handle: UserHandle, pch_version: *const u8) -> *const (),
@@ -416,7 +416,7 @@ api_fn! { GetISteamController(
     user_handle: UserHandle,
     pipe_handle: PipeHandle,
     pch_version: *const u8,
-) -> *const () {
+) -> *const Controller {
     debug!();
 
     println!("user_handle = {user_handle:?}");
@@ -425,7 +425,7 @@ api_fn! { GetISteamController(
         CStr::from_ptr(pch_version.cast())
     });
 
-    &super::P100_FAKE as *const usize as *const ()
+    &super::FAKE_CONTROLLER
 } }
 
 api_fn! { GetISteamUGC(
