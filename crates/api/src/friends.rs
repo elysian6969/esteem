@@ -1,21 +1,22 @@
-use super::{api_fn, debug, virtual_struct};
+use super::{api_fn, debug, virtual_struct, AppId};
 use core::ptr;
+use steam_id::SteamId;
 
 virtual_struct! { Friends {
     fn get_persona_name(&self) -> *const u8,
     fn set_persona_name(&self, name: *const u8) -> i32,
     fn get_persona_state(&self) -> i32,
     fn get_friend_count(&self, flags: i32) -> i32,
-    fn get_friend_by_index(&self, index: i32, flags: i32) -> u64,
-    fn get_friend_relationship(&self, friend_id: u64) -> i32,
-    fn get_friend_persona_state(&self, friend_id: u64) -> i32,
-    fn get_friend_persona_name(&self, friend_id: u64) -> *const u8,
-    fn get_friend_game_played(&self, friend_id: u64, game_info: *mut ()) -> bool,
-    fn get_friend_persona_name_history(&self, friend_id: u64, persona_name: i32) -> *const u8,
-    fn get_friend_steam_level(&self, friend_id: u64) -> i32,
-    fn get_player_nickname(&self, user_id: u64) -> *const u8,
+    fn get_friend_by_index(&self, index: i32, flags: i32) -> SteamId,
+    fn get_friend_relationship(&self, friend_id: SteamId) -> i32,
+    fn get_friend_persona_state(&self, friend_id: SteamId) -> i32,
+    fn get_friend_persona_name(&self, friend_id: SteamId) -> *const u8,
+    fn get_friend_game_played(&self, friend_id: SteamId, game_info: *mut ()) -> bool,
+    fn get_friend_persona_name_history(&self, friend_id: SteamId, persona_name: i32) -> *const u8,
+    fn get_friend_steam_level(&self, friend_id: SteamId) -> i32,
+    fn get_player_nickname(&self, user_id: SteamId) -> *const u8,
     fn get_friends_group_count(&self) -> i32,
-    fn get_friends_group_id_by_index(&self, index: i32) -> u64,
+    fn get_friends_group_id_by_index(&self, index: i32) -> SteamId,
 } }
 
 impl Friends {
@@ -74,15 +75,15 @@ api_fn! { GetFriendByIndex(
     &Friends,
     index: i32,
     flags: i32,
-) -> u64 {
+) -> SteamId {
     debug!();
 
-    0
+    unsafe { SteamId::new_unchecked(0) }
 } }
 
 api_fn! { GetFriendRelationship(
     &Friends,
-    friend: u64,
+    friend_id: SteamId,
 ) -> i32 {
     debug!();
 
@@ -91,7 +92,7 @@ api_fn! { GetFriendRelationship(
 
 api_fn! { GetFriendPersonaState(
     &Friends,
-    friend: u64,
+    friend_id: SteamId,
 ) -> i32 {
     debug!();
 
@@ -100,7 +101,7 @@ api_fn! { GetFriendPersonaState(
 
 api_fn! { GetFriendPersonaName(
     &Friends,
-    friend: u64,
+    friend_id: SteamId,
 ) -> *const u8 {
     debug!();
 
@@ -111,7 +112,7 @@ api_fn! { GetFriendPersonaName(
 
 api_fn! { GetFriendGamePlayed(
     &Friends,
-    friend: u64,
+    friend_id: SteamId,
     game_info: *mut (),
 ) -> bool {
     debug!();
@@ -121,7 +122,7 @@ api_fn! { GetFriendGamePlayed(
 
 api_fn! { GetFriendPersonaNameHistory(
     &Friends,
-    friend: u64,
+    friend_id: SteamId,
     index: i32,
 ) -> *const u8 {
     debug!();
@@ -131,7 +132,7 @@ api_fn! { GetFriendPersonaNameHistory(
 
 api_fn! { GetFriendSteamLevel(
     &Friends,
-    friend: u64,
+    friend_id: SteamId,
 ) -> i32 {
     debug!();
 
@@ -140,7 +141,7 @@ api_fn! { GetFriendSteamLevel(
 
 api_fn! { GetPlayerNickname(
     &Friends,
-    friend: u64,
+    friend_id: SteamId,
 ) -> *const u8 {
     debug!();
 
@@ -156,10 +157,10 @@ api_fn! { GetFriendsGroupCount(&Friends) -> i32 {
 api_fn! { GetFriendsGroupIDByIndex(
     &Friends,
     group: i32,
-) -> u64 {
+) -> SteamId {
     debug!();
 
-    0
+    unsafe { SteamId::new_unchecked(0) }
 } }
 
 api_fn! { GetFriendsGroupName(
@@ -207,15 +208,15 @@ api_fn! { GetClanCount(&Friends) -> i32 {
     0
 } }
 
-api_fn! { GetClanByIndex(&Friends, clan: i32) -> u64 {
+api_fn! { GetClanByIndex(&Friends, clan: i32) -> SteamId {
     debug!();
 
-    0
+    unsafe { SteamId::new_unchecked(0) }
 } }
 
 api_fn! { GetClanName(
     &Friends,
-    clan_id: u32,
+    clan_id: SteamId,
 ) -> *const u8 {
     debug!();
 
@@ -224,18 +225,18 @@ api_fn! { GetClanName(
 
 api_fn! { GetClanTag(
     &Friends,
-    clan_id: u32,
+    clan_id: SteamId,
 ) -> *const u8 {
     debug!();
 
-    let tag = "eleutheria\0";
+    let tag = "elysium\0";
 
     tag.as_ptr()
 } }
 
 api_fn! { GetClanActivityCounts(
     &Friends,
-    clan_id: u64,
+    clan_id: SteamId,
     online: *const i32,
     in_game: *const i32,
     chatting: *const i32,
@@ -247,7 +248,7 @@ api_fn! { GetClanActivityCounts(
 
 api_fn! { DownloadClanActivityCounts(
     &Friends,
-    clan_id: u64,
+    clan_id: SteamId,
     ids: *const i64,
     len: i32,
 ) -> u64 {
@@ -258,7 +259,17 @@ api_fn! { DownloadClanActivityCounts(
 
 api_fn! { GetFriendCountFromSource(
     &Friends,
-    id: u64,
+    source_id: SteamId,
+) -> i32 {
+    debug!();
+
+    0
+} }
+
+api_fn! { GetFriendCountFromSourceByIndex(
+    &Friends,
+    source_id: SteamId,
+    index: i32,
 ) -> i32 {
     debug!();
 
@@ -267,8 +278,8 @@ api_fn! { GetFriendCountFromSource(
 
 api_fn! { IsUserInSource(
     &Friends,
-    id: u64,
-    id_source: u64,
+    user_id: SteamId,
+    source_id: SteamId,
 ) -> bool {
     debug!();
 
@@ -307,7 +318,7 @@ api_fn! { ActivateGameOverlayToWebPage(
 
 api_fn! { ActivateGameOverlayToStore(
     &Friends,
-    app_id: i32,
+    app_id: AppId,
     flag: i32,
 ) -> () {
     debug!();

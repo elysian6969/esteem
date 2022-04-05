@@ -1,10 +1,10 @@
-use super::{api_fn, debug, virtual_struct, UserHandle};
+use super::{api_fn, debug, virtual_struct, AppId, UserHandle};
 use core::ptr;
 
 virtual_struct! { User {
     fn get_handle(&self) -> UserHandle,
     fn logged_on(&self) -> bool,
-    fn get_steam_id(&self) -> u64,
+    fn get_steam_id(&self) -> steam_id::SteamId,
     fn initiate_game_connection(&self, auth_blob: *const (), auth_blob_max: i32, steam_id_game_server: u64, ip: u32, port: u16, secure: bool) -> i32,
     fn terminate_game_connection(&self, ip: u32, port: u16) -> (),
     fn track_app_usage_event(&self, game_id: u64, app_usage_event: i32, pch_extra_info: *const u8) -> (),
@@ -19,7 +19,7 @@ virtual_struct! { User {
     fn begin_auth_session(&self, auth_ticket: *const (), auth_ticket_len: i32, steam_id: i32) -> i32,
     fn end_auth_session(&self, steam_id: i32) -> (),
     fn cancel_auth_ticket(&self, auth_ticket_handle: i32) -> (),
-    fn user_has_license_for_app(&self, steam_id: i32, app_id: i32) -> i32,
+    fn user_has_license_for_app(&self, steam_id: i32, app_id: AppId) -> i32,
     fn is_behind_nat(&self) -> bool,
     fn advertise_game(&self, game_server_id: u32, ip: u32, port: u16) -> bool,
     fn request_encrypted_app_ticket(&self, data_to_include: *const (), data_to_include_len: i32) -> i32,
@@ -75,14 +75,10 @@ api_fn! { BLoggedOn(&User) -> bool {
     true
 } }
 
-api_fn! { GetSteamID(&User) -> u64 {
+api_fn! { GetSteamID(&User) -> steam_id::SteamId {
     debug!();
 
-    let id = 76561199254102667;
-
-    println!("id = {id:?}");
-
-    id
+    super::USER_ID
 } }
 
 api_fn! { InitiateGameConnection(
@@ -213,19 +209,19 @@ api_fn! { BeginAuthSession(
 api_fn! { EndAuthSession(&User, steam_id: i32) -> () {
     debug!();
 
-        println!("steam_id = {steam_id:?}");
+    println!("steam_id = {steam_id:?}");
 } }
 
 api_fn! { CancelAuthTicket(&User, auth_ticket_handle: i32) -> () {
     debug!();
 
-        println!("auth_ticket_handle = {auth_ticket_handle:?}");
+    println!("auth_ticket_handle = {auth_ticket_handle:?}");
 } }
 
 api_fn! { UserHasLicenseForApp(
     &User,
     steam_id: i32,
-    app_id: i32,
+    app_id: AppId,
 ) -> i32 {
     debug!();
 

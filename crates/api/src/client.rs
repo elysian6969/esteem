@@ -1,7 +1,7 @@
 use super::{
-    api_fn, debug, virtual_struct, AccountKind, Apps, Controller, Friends, GameServer,
-    GameServerStats, HTMLSurface, Matchmaking, MatchmakingServers, Networking, PipeHandle,
-    RemoteStorage, Screenshots, User, UserHandle, UserStats, Utils,
+    api_fn, debug, virtual_struct, Apps, Controller, Friends, GameServer, GameServerStats,
+    HTMLSurface, Matchmaking, MatchmakingServers, Networking, PipeHandle, RemoteStorage,
+    Screenshots, User, UserHandle, UserStats, Utils,
 };
 use core::ptr;
 use std::ffi::CStr;
@@ -10,7 +10,7 @@ virtual_struct! { Client {
     fn create_pipe(&self) -> PipeHandle,
     fn release_pipe(&self, pipe_handle: PipeHandle) -> bool,
     fn connect_to_global_user(&self, pipe_handle: PipeHandle) -> UserHandle,
-    fn create_local_user(&self, pipe_handle: *const PipeHandle, account_kind: AccountKind) ->UserHandle,
+    fn create_local_user(&self, pipe_handle: *const PipeHandle, account_kind: steam_id::Kind) ->UserHandle,
     fn release_user(&self, pipe_handle: PipeHandle, user_handle: UserHandle) -> (),
     fn get_user(&self, pipe_handle: PipeHandle, user_handle: UserHandle, pch_version: *const u8) -> *const User,
     fn get_game_server(&self, pipe_handle: PipeHandle, user_handle: UserHandle, pch_version: *const u8) -> *const GameServer,
@@ -121,7 +121,7 @@ api_fn! { ConnectToGlobalUser(
 api_fn! { CreateLocalUser(
     &Client,
     pipe_handle: *const PipeHandle,
-    account_kind: AccountKind,
+    account_kind: steam_id::Kind,
 ) -> UserHandle {
     debug!();
 

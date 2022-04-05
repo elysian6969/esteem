@@ -3,7 +3,7 @@
 
 use std::ffi::CStr;
 
-pub use account_kind::AccountKind;
+pub use app_id::AppId;
 pub use apps::Apps;
 pub use client::Client;
 pub use controller::Controller;
@@ -17,14 +17,12 @@ pub use matchmaking_servers::MatchmakingServers;
 pub use networking::Networking;
 pub use remote_storage::RemoteStorage;
 pub use screenshots::Screenshots;
-pub use universe::Universe;
 pub use user::User;
 pub use user_stats::UserStats;
 pub use utils::Utils;
 
-mod account_kind;
+mod app_id;
 mod error;
-mod universe;
 
 pub mod apps;
 pub mod client;
@@ -66,6 +64,9 @@ pub static FAKE_USER: User = User::new();
 pub static FAKE_USER_STATS: UserStats = UserStats::new();
 pub static FAKE_UTILS: Utils = Utils::new();
 
+pub const USER_ID: steam_id::SteamId =
+    unsafe { steam_id::SteamId::new_unchecked(76561199254102667) };
+
 #[no_mangle]
 pub extern "C" fn SteamAPI_GetHSteamPipe(this: *const Client) -> PipeHandle {
     debug!();
@@ -96,12 +97,15 @@ pub extern "C" fn SteamAPI_RegisterCallResult(this: *const Client) {
 }
 
 #[no_mangle]
-pub extern "C" fn SteamAPI_RegisterCallback(this: *const Client) {
+pub extern "C" fn SteamAPI_RegisterCallback(callbacks: *const (), len: i32) {
     debug!();
+
+    println!("callbacks = {callbacks:?}");
+    println!("len = {len}");
 }
 
 #[no_mangle]
-pub extern "C" fn SteamAPI_RunCallbacks(this: *const Client) {
+pub extern "C" fn SteamAPI_RunCallbacks() {
     debug!();
 }
 
@@ -156,23 +160,31 @@ pub extern "C" fn SteamAPI_WriteMiniDump(this: *const Client) {
     debug!();
 }
 #[no_mangle]
-pub extern "C" fn SteamGameServer_GetHSteamPipe(this: *const Client) {
+pub extern "C" fn SteamGameServer_GetHSteamPipe(this: *const Client) -> PipeHandle {
     debug!();
+
+    69
 }
 
 #[no_mangle]
-pub extern "C" fn GetHSteamPipe(this: *const Client) {
+pub extern "C" fn GetHSteamPipe(this: *const Client) -> PipeHandle {
     debug!();
+
+    69
 }
 
 #[no_mangle]
-pub extern "C" fn SteamGameServer_GetHSteamUser(this: *const Client) {
+pub extern "C" fn SteamGameServer_GetHSteamUser(this: *const Client) -> UserHandle {
     debug!();
+
+    69
 }
 
 #[no_mangle]
-pub extern "C" fn SteamGameServer_GetIPCCallCount(this: *const Client) {
+pub extern "C" fn SteamGameServer_GetIPCCallCount(this: *const Client) -> i32 {
     debug!();
+
+    0
 }
 
 #[no_mangle]
@@ -195,26 +207,51 @@ pub extern "C" fn SteamInternal_CreateInterface(version: *const u8) -> *const Cl
 }
 
 #[no_mangle]
-pub extern "C" fn SteamGameServerInternal_CreateInterface(ver: *const u8) {
+pub extern "C" fn SteamGameServerInternal_CreateInterface(ver: *const u8) -> *const () {
     debug!();
+
+    &P100_FAKE as *const usize as *const ()
 }
 
 #[no_mangle]
-pub extern "C" fn SteamInternal_GameServer_Init(this: *const Client) {
+pub extern "C" fn SteamInternal_GameServer_Init(
+    ip: u32,
+    port: u32,
+    game_port: u16,
+    query_port: u16,
+    server_mode: u8,
+    version_string: *const u8,
+) -> bool {
     debug!();
+
+    println!("ip = {ip}");
+    println!("port = {port}");
+    println!("game_port = {game_port}");
+    println!("query_port = {query_port}");
+    println!("server_mode = {server_mode}");
+    println!("version_string = {:?}", unsafe {
+        CStr::from_ptr(version_string.cast())
+    });
+
+    false
 }
 
 #[no_mangle]
-pub extern "C" fn SteamAPI_SetMiniDumpComment(this: *const Client) {
-    debug!();
+pub extern "C" fn SteamAPI_SetMiniDumpComment(message: *const u8) {
+    let message = unsafe { CStr::from_ptr(message.cast()).to_string_lossy() };
+    let lines = message.lines();
+
+    for line in lines {
+        println!("{}: {}", frosting::function!(), line);
+    }
 }
 
 #[no_mangle]
-pub extern "C" fn SteamAPI_RestartAppIfNecessary(this: *const Client) {
-    debug!();
+pub extern "C" fn SteamAPI_RestartAppIfNecessary(app_id: AppId) {
+    println!("{}: app_id = {app_id}", frosting::function!());
 }
 
 #[no_mangle]
-pub extern "C" fn SteamAPI_Shutdown(this: *const Client) {
+pub extern "C" fn SteamAPI_Shutdown() {
     debug!();
 }

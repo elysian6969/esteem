@@ -1,4 +1,4 @@
-use super::{api_fn, debug, virtual_struct};
+use super::{api_fn, debug, virtual_struct, AppId};
 use core::ptr;
 
 virtual_struct! { RemoteStorage {
@@ -28,11 +28,11 @@ virtual_struct! { RemoteStorage {
     fn set_cloud_enabled_for_app(&self, enabled: bool) -> bool,
     fn ugc_download(&self, ugc_handle: i32, priority: u32) -> i32,
     fn get_ugc_download_progress(&self, ugc_handle: i32, bytes_downloaded: *mut i32, bytes_expected: *mut i32) -> bool,
-    fn get_ugc_details(&self, ugc_handle: i32, app_id: *mut i32, name: *mut u8, file_size_in_bytes: *mut i32, steam_id_owner: *mut u64) -> bool,
+    fn get_ugc_details(&self, ugc_handle: i32, app_id: *mut AppId, name: *mut u8, file_size_in_bytes: *mut i32, steam_id_owner: *mut u64) -> bool,
     fn ugc_read(&self, ugc_handle: i32, data: *mut (), data_to_read: i32, offset: u32, action: u8) -> i32,
     fn get_cached_ugc_count(&self) -> i32,
     fn get_cached_ugc_handle(&self, cached_content: i32) -> i32,
-    fn publish_workshop_file(&self, file: *const u8, preview_file: *const u8, comsumer_app_id: i32, title: *const u8, description: *const u8, visibility: u8, tags: *const (), workshop_file_kind: u8) -> i32,
+    fn publish_workshop_file(&self, file: *const u8, preview_file: *const u8, comsumer_app_id: AppId, title: *const u8, description: *const u8, visibility: u8, tags: *const (), workshop_file_kind: u8) -> i32,
     fn create_published_file_update_request(&self, unpublished_file_id: i32) -> i32,
     fn update_published_file_file(&self, handle: i32, file: *const u8) -> bool,
     fn update_published_file_preview_file(&self, handle: i32, preview_file: *const u8) -> bool,
@@ -51,7 +51,7 @@ virtual_struct! { RemoteStorage {
     fn update_user_published_item_vote(&self, handle: i32) -> i32,
     fn get_user_published_item_vote_details(&self, handle: i32) -> i32,
     fn enumerate_user_shared_workshop_files(&self, steam_id: i32, start_index: u32, tags: *const (), excluded_tags: *const ()) -> i32,
-    fn publish_video(&self, video_provider: u8, video_account: *const u8, video_identifier: *const u8, preview_file: *const u8, app_id: i32, title: *const u8, description: *const u8, visibility: u8, tags: *const ()) -> i32,
+    fn publish_video(&self, video_provider: u8, video_account: *const u8, video_identifier: *const u8, preview_file: *const u8, app_id: AppId, title: *const u8, description: *const u8, visibility: u8, tags: *const ()) -> i32,
     fn set_user_published_file_action(&self, id: i32, action: u8) -> i32,
     fn enumerate_published_files_by_user_action(&self, action: u8, start_index: u32) -> i32,
     fn enumerate_published_workshop_files(&self, action: u8, start_index: u32) -> i32,
@@ -292,7 +292,7 @@ api_fn! { GetUGCDownloadProgress(&RemoteStorage, ugchandle: i32, bytesdownloaded
     false
 } }
 
-api_fn! { GetUGCDetails(&RemoteStorage, ugchandle: i32, appid: *mut i32, name: *mut u8, filesizeinbytes: *mut i32, steamidowner: *mut u64) -> bool {
+api_fn! { GetUGCDetails(&RemoteStorage, ugchandle: i32, app_id: *mut AppId, name: *mut u8, filesizeinbytes: *mut i32, steamidowner: *mut u64) -> bool {
     debug!();
 
     false
@@ -316,7 +316,7 @@ api_fn! { GetCachedUGCHandle(&RemoteStorage, cachedcontent: i32) -> i32 {
     0
 } }
 
-api_fn! { PublishWorkshopFile(&RemoteStorage, file: *const u8, previewfile: *const u8, comsumerappid: i32, title: *const u8, description: *const u8, visibility: u8, tags: *const (), workshopfilekind: u8) -> i32 {
+api_fn! { PublishWorkshopFile(&RemoteStorage, file: *const u8, previewfile: *const u8, comsumer_app_id: AppId, title: *const u8, description: *const u8, visibility: u8, tags: *const (), workshopfilekind: u8) -> i32 {
     debug!();
 
     0
@@ -430,7 +430,7 @@ api_fn! { EnumerateUserSharedWorkshopFiles(&RemoteStorage, steamid: i32, startin
     0
 } }
 
-api_fn! { PublishVideo(&RemoteStorage, videoprovider: u8, videoaccount: *const u8, videoidentifier: *const u8, previewfile: *const u8, appid: i32, title: *const u8, description: *const u8, visibility: u8, tags: *const ()) -> i32 {
+api_fn! { PublishVideo(&RemoteStorage, videoprovider: u8, videoaccount: *const u8, videoidentifier: *const u8, previewfile: *const u8, app_id: AppId, title: *const u8, description: *const u8, visibility: u8, tags: *const ()) -> i32 {
     debug!();
 
     0
