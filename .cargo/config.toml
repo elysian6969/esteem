@@ -1,0 +1,3 @@
+[alias]
+copy = "run --package steam-copy --bin steam-copy --"
+wrap = "run --package steam-wrapper --bin steam-wrapper --"

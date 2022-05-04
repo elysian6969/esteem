@@ -1,3 +1,5 @@
+#![allow(unused_variables)]
+
 macro_rules! stub {
     ($name:ident) => {
         #[no_mangle]
