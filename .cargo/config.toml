@@ -1,3 +1,3 @@
 [alias]
 copy = "run --package steam-copy --"
-build-esteem = "build --package esteem --target i686-unknown-linux-gnu --"
+build-esteem = "build --package esteem --target i686-unknown-linux-gnu --release --"
