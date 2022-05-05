@@ -2,11 +2,29 @@
 
 attempting to figure out how steam works
 
+copy libraries and binaries from an existing steam installation (`$XDG_DATA_HOME/Steam`)
+
 ```shell
-# copy parts from an existing steam installation ($XDG_DATA_HOME/Steam)
 $ cargo copy
-# run esteem!
-$ apulse cargo esteem --no-browser --no-sandbox --zenity /milk/global/zenity
+```
+
+compile esteem
+
+```shell
+$ cargo build-esteem
+```
+
+copy esteem to `./lib/i686` (required for steamwebhelper to not break, it resolves it's path based on esteems location)
+
+```shell
+$ cp ${CARGO_TARGET_DIR:target}/i686-unknown-linux-gnu/release/esteem ./lib/i686/esteem
+```
+
+run esteem
+
+```shell
+$ cd lib
+$ apulse esteem --no-browser --no-sandbox --zenity /milk/global/zenity
 ```
 
 ### thanks
