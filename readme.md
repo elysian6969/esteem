@@ -24,7 +24,7 @@ run esteem
 
 ```shell
 $ cd lib
-$ apulse esteem --no-browser --no-sandbox --zenity /milk/global/zenity
+$ apulse ./i686/esteem --no-browser --no-sandbox --zenity /milk/global/zenity
 ```
 
 ### thanks
