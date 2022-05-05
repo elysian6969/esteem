@@ -1,7 +1,0 @@
-[package]
-edition = "2021"
-name = "steam-bootstrap"
-version = "0.0.0"
-
-[dependencies.libloading]
-version = "0.7"

@@ -1,4 +1,4 @@
-<h1 align="center"><code>steam-wrapper</code></h1>
+<h1 align="center"><code>esteem</code></h1>
 
 attempting to figure out how steam works
 
