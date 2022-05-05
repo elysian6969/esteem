@@ -33,14 +33,28 @@ impl SteamUI {
             .collect();
 
         let mut args: Vec<*const i8> = args.into_iter().map(|arg| arg.as_ptr()).collect();
+        let len = args.len() as i32;
 
         args.push(ptr::null());
 
         unsafe {
+            // ghidra gives us
+            //
+            // void SteamDllMain(int argc, char **argv) {
+            //     SteamDllMainEx(argc,argv, (char **)NULL);
+            //     return;
+            // }
+            //
+            // void SteamDllMainEx(int argc, char **argv, char **possibly_envp) {
+            //     possibly_environ = possibly_envp;
+            //     main(argc, argv);
+            //     return;
+            // }
+            //
             let main: Symbol<MainFn> = self.library.get(b"SteamDllMain\0").unwrap();
             let main: MainFn = mem::transmute(main.into_raw());
 
-            main(args.len().saturating_sub(1) as i32, args.as_ptr());
+            main(len, args.as_ptr());
         }
     }
 }

@@ -51,8 +51,8 @@ impl Extract {
         let _ = fs::create_dir_all(&self.i686_dir);
         let _ = fs::create_dir_all(&self.x86_64_dir);
 
-        fs::symlink(self.lib_dir.join("ubuntu12_32"), "i686")?;
-        fs::symlink(self.lib_dir.join("ubuntu12_64"), "i686")?;
+        //fs::symlink(self.lib_dir.join("ubuntu12_32"), "i686")?;
+        //fs::symlink(self.lib_dir.join("ubuntu12_64"), "i686")?;
 
         Ok(())
     }

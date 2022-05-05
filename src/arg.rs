@@ -16,6 +16,6 @@ pub const OPEN_DEV_TOOLS: &str = "-opendevtools";
 pub const OPEN_OVERLAY_DEV_TOOLS: &str = "-openoverlaydevtools";
 pub const SKIP_STREAMING_DRIVERS: &str = "-skipstreamingdrivers";
 // requires steamconsole.so
-pub const TEXT_CLIENT: &str = "-textclient";
+//pub const TEXT_CLIENT: &str = "-textclient";
 pub const VR_SKIP: &str = "-vrskip";
 pub const WINDOWED: &str = "-windowed";
