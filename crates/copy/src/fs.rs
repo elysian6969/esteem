@@ -1,4 +1,5 @@
 use std::ffi::OsStr;
+use std::fs::DirEntry;
 use std::io::ErrorKind;
 use std::os::unix;
 use std::path::Path;
@@ -19,6 +20,36 @@ where
 
     fs::copy(from, to)?;
 
+    Ok(())
+}
+
+pub fn copy_dir_all<I>(from: &Path, to: &Path, inspect: I) -> io::Result<()>
+where
+    I: Copy + FnOnce(&Path, &Path),
+{
+    for entry in fs::read_dir(from)? {
+        let entry = entry?;
+
+        let base_name = entry.file_name();
+        let kind = entry.file_type()?;
+
+        let from = from.join(&base_name);
+        let to = to.join(&base_name);
+
+        inspect(&from, &to);
+
+        if kind.is_dir() {
+            let _ = fs::create_dir_all(&to)?;
+
+            copy_dir_all(&from, &to, inspect)?;
+        } else if kind.is_file() {
+            fs::copy(&from, &to)?;
+        } else if kind.is_symlink() {
+            let to = fs::read_link(&from)?;
+
+            symlink(&from, &to)?;
+        }
+    }
     Ok(())
 }
 

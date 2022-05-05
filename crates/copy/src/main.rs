@@ -9,8 +9,11 @@ const ROOT: &str = env!("CARGO_MANIFEST_DIR");
 
 struct Extract {
     lib_dir: PathBuf,
+
     i686_dir: PathBuf,
     x86_64_dir: PathBuf,
+
+    data_dir: PathBuf,
 
     ubuntu32_dir: PathBuf,
     //ubuntu64_dir: PathBuf,
@@ -37,8 +40,11 @@ impl Extract {
 
         Self {
             lib_dir,
+
             i686_dir,
             x86_64_dir,
+
+            data_dir,
 
             ubuntu32_dir,
             //ubuntu64_dir,
@@ -70,6 +76,22 @@ impl Extract {
             .or_else(|_| fs::copy_from(&self.steam_runtime_usr_i686_dir, &self.i686_dir, name))
     }
 
+    fn copy_dir_all<N>(&self, name: N) -> io::Result<()>
+    where
+        N: AsRef<OsStr>,
+    {
+        let name = name.as_ref();
+
+        println!("   - \x1b[38;5;2m{name:?}\x1b[m");
+
+        let from = self.data_dir.join(name);
+        let to = self.lib_dir.join(name);
+
+        fs::copy_dir_all(&from, &to, |from, to| {
+            println!("   - \x1b[38;5;2m{:?}\x1b[m", from.file_name().unwrap());
+        })
+    }
+
     fn symlink<F, T>(&self, from: F, to: T) -> io::Result<()>
     where
         F: AsRef<OsStr>,
@@ -80,7 +102,9 @@ impl Extract {
 
         println!("   - \x1b[38;5;2m{from:?}\x1b[m -> \x1b[38;5;2m{to:?}\x1b[m");
 
-        fs::symlink(self.i686_dir.join(from), to)
+        let from = self.i686_dir.join(from);
+
+        fs::symlink(from, to)
     }
 }
 
@@ -162,6 +186,21 @@ fn main() -> io::Result<()> {
 
     extract.copy("libICE.so.6.3.0")?;
     extract.symlink("libICE.so.6", "libICE.so.6.3.0")?;
+
+    println!(" > copy configuration");
+    extract.copy_dir_all("config")?;
+
+    println!(" > copy graphics");
+    extract.copy_dir_all("graphics")?;
+
+    println!(" > copy graphics");
+    extract.copy_dir_all("public")?;
+
+    println!(" > copy resources");
+    extract.copy_dir_all("resource")?;
+
+    println!(" > copy steam");
+    extract.copy_dir_all("steam")?;
 
     Ok(())
 }
