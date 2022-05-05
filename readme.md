@@ -17,7 +17,7 @@ $ cargo build-esteem
 copy esteem to `./lib/i686` (required for steamwebhelper to not break, it resolves it's path based on esteems location)
 
 ```shell
-$ cp ${CARGO_TARGET_DIR:target}/i686-unknown-linux-gnu/release/esteem ./lib/i686/esteem
+$ cp ${CARGO_TARGET_DIR:-target}/i686-unknown-linux-gnu/release/esteem ./lib/i686/esteem
 ```
 
 run esteem
