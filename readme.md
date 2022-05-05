@@ -2,6 +2,13 @@
 
 attempting to figure out how steam works
 
+```shell
+# copy parts from an existing steam installation ($XDG_DATA_HOME/Steam)
+$ cargo copy
+# run esteem!
+$ apulse cargo esteem --no-browser --no-sandbox --zenity /milk/global/zenity
+```
+
 ### thanks
 
  - [bare minimum steam client bootstrap (windows only)](https://gist.github.com/he1a2s0/a99be14877a83a96ee72f8538c582bf7)
