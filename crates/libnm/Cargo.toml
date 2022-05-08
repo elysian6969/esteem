@@ -1,0 +1,11 @@
+[package]
+edition = "2021"
+name = "nm"
+version = "0.0.0"
+
+[dependencies.frosting]
+git = "https://github.com/elysian6969/frosting"
+
+[lib]
+crate-type = ["cdylib"]
+path = "src/lib.rs"

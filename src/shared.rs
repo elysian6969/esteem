@@ -1,4 +1,4 @@
-static INSTALL_PATH: &str = "/mizzle/dev/steam-wrapper/lib\0";
+const INSTALL_PATH: &str = "/usr/lib/esteem\0";
 
 #[derive(Clone, Copy, Debug, Eq, PartialEq)]
 #[repr(i32)]

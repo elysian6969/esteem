@@ -2,3 +2,10 @@
 edition = "2021"
 name = "reaper"
 version = "0.0.0"
+
+[dependencies.serde]
+features = ["derive"]
+version = "1.0"
+
+[dependencies.toml]
+version = "0.5"

@@ -10,10 +10,10 @@ pub struct SteamUI {
 }
 
 impl SteamUI {
-    pub fn open() -> Option<Self> {
-        let library = unsafe { Library::new("steamui.so").ok()? };
+    pub fn open() -> Result<Self, libloading::Error> {
+        let library = unsafe { Library::new("steamui.so")? };
 
-        Some(Self { library })
+        Ok(Self { library })
     }
 
     pub fn main<I, S>(&self, args: I)
@@ -32,7 +32,7 @@ impl SteamUI {
             })
             .collect();
 
-        let mut args: Vec<*const i8> = args.into_iter().map(|arg| arg.as_ptr()).collect();
+        let mut args: Vec<*const i8> = args.iter().map(|arg| arg.as_ptr()).collect();
         let len = args.len() as i32;
 
         args.push(ptr::null());
