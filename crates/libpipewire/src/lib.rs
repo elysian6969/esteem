@@ -4,16 +4,14 @@ macro_rules! stub {
     ($name:ident) => {
         #[no_mangle]
         pub extern "C" fn $name() {
+            frosting::println!();
+
             ()
         }
     };
 }
 
-//stub!(pw_context_connect);
-//stub!(pw_context_connect_fd);
 stub!(pw_context_destroy);
-//stub!(pw_context_new);
-//stub!(pw_core_disconnect);
 stub!(pw_init);
 stub!(pw_stream_add_listener);
 stub!(pw_stream_connect);
@@ -37,6 +35,8 @@ pub extern "C" fn pw_context_new(
     properties: *const (),
     user_data_size: usize,
 ) -> *const () {
+    frosting::println!();
+
     &CONTEXT as *const ()
 }
 
@@ -46,6 +46,8 @@ pub extern "C" fn pw_context_connect(
     properties: *const (),
     user_data_size: usize,
 ) -> *const () {
+    frosting::println!();
+
     &CORE as *const ()
 }
 
@@ -56,10 +58,14 @@ pub extern "C" fn pw_context_connect_fd(
     properties: *const (),
     user_data_size: usize,
 ) -> *const () {
+    frosting::println!();
+
     &CORE as *const ()
 }
 
 #[no_mangle]
 pub extern "C" fn pw_core_disconnect(core: *const ()) -> i32 {
+    frosting::println!();
+
     0
 }

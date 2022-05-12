@@ -94,10 +94,8 @@ fn main() {
         let linux32 = path.with_file_name("bin");
         let linux64 = path.with_file_name("bin/linux64");
 
-        println!("{:?}", linux64);
-
         // fixes csgo being unable to find it's own libraries?
-        env::set_var("LD_LIBRARY_PATH", format!("{}:/usr/lib/esteem/i686", linux64));
+        env::set_var("LD_LIBRARY_PATH", format!("{}:/usr/lib/esteem/i686", linux64.display()));
 
         println!("> launch options");
 

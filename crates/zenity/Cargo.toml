@@ -1,4 +1,4 @@
 [package]
 edition = "2021"
-name = "zenity"
+name = "esteem-zenity"
 version = "0.0.0"

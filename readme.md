@@ -2,29 +2,40 @@
 
 attempting to figure out how steam works
 
-copy libraries and binaries from an existing steam installation (`$XDG_DATA_HOME/Steam`)
+copy your steam install to `/usr/lib/esteem`
 
-```shell
-$ cargo copy
+compile components
+
+```bash
+# steam bootstrapper (required)
+cargo build-esteem
+
+# steam error reporter (recommended)
+cargo build-error-reporter
+
+# steam reaper (launch env (options soontm) from $XDG_DATA_DIR/esteem/launch_options.toml)
+cargo build-reaper
+
+# gnome's zenity cli replacement (optional)
+cargo build-zenity
+
+# networkmanager stub (optional)
+cargo build-libnm
+
+# pipewire stub (optional)
+cargo build-libpipewire
 ```
 
-compile esteem
+copy components
 
-```shell
-$ cargo build-esteem
-```
 
-copy esteem to `./lib/i686` (required for steamwebhelper to not break, it resolves it's path based on esteems location)
+```bash
+cp ${CARGO_TARGET_DIR:-target}/i686-unknown-linux-gnu/release/esteem /usr/lib/i686/esteem
+cp ${CARGO_TARGET_DIR:-target}/i686-unknown-linux-gnu/release/esteem-error-reporter /usr/lib/i686/steamerrorreporter
+cp ${CARGO_TARGET_DIR:-target}/i686-unknown-linux-gnu/release/esteem-reaper /usr/lib/i686/reaper
 
-```shell
-$ cp ${CARGO_TARGET_DIR:-target}/i686-unknown-linux-gnu/release/esteem ./lib/i686/esteem
-```
-
-run esteem
-
-```shell
-$ cd lib
-$ apulse ./i686/esteem --no-browser --no-sandbox --zenity /milk/global/zenity
+cp ${CARGO_TARGET_DIR:-target}/i686-unknown-linux-gnu/release/libnm.so /usr/lib/i686/libnm.so
+cp ${CARGO_TARGET_DIR:-target}/i686-unknown-linux-gnu/release/libpipewire.so /usr/lib/i686/libpipewire.so
 ```
 
 ### thanks

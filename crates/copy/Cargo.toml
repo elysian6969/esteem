@@ -1,6 +1,0 @@
-[package]
-edition = "2021"
-name = "steam-copy"
-version = "0.0.0"
-
-[dependencies]
