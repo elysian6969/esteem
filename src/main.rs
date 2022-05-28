@@ -10,6 +10,7 @@ use std::process::Command;
 mod arg;
 mod key;
 mod options;
+mod shared;
 mod ui;
 
 const fn new_path(path: &'static str) -> &'static Path {
@@ -65,7 +66,10 @@ fn main() {
         println!("current_dir = {:?}", std::env::current_dir());
         println!("home = {:?}", std::env::var_os("HOME"));
         println!("path = {:?}", std::env::var_os("PATH"));
-        println!("ld_library_path = {:?}", std::env::var_os("LD_LIBRARY_PATH"));
+        println!(
+            "ld_library_path = {:?}",
+            std::env::var_os("LD_LIBRARY_PATH")
+        );
 
         let mut args = Vec::new();
 
@@ -131,7 +135,7 @@ fn main() {
 
         path.insert(0, i686.clone());
         ld_library_path.insert(0, i686);
-        
+
         let path = env::join_paths(path).expect("PATH");
         let ld_library_path = env::join_paths(ld_library_path).expect("LD_LIBRARY_PATH");
         let mut args = env::args_os();

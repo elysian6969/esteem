@@ -29,6 +29,8 @@ pub enum LauncherKind {
 pub static GetClientLauncherType: unsafe extern "C" fn() -> LauncherKind = {
     #[inline(always)]
     pub unsafe extern "C" fn GetClientLauncherType() -> LauncherKind {
+        frosting::println!();
+
         LauncherKind::Default
     }
 
@@ -38,9 +40,16 @@ pub static GetClientLauncherType: unsafe extern "C" fn() -> LauncherKind = {
 #[allow(non_snake_case)]
 #[no_mangle]
 #[used(linker)]
+pub static pfnGetClientLauncherType: unsafe extern "C" fn() -> LauncherKind = GetClientLauncherType;
+
+#[allow(non_snake_case)]
+#[no_mangle]
+#[used(linker)]
 pub static SteamBootstrapper_GetInstallDir: unsafe extern "C" fn() -> *const i8 = {
     #[inline(always)]
     pub unsafe extern "C" fn SteamBootstrapper_GetInstallDir() -> *const i8 {
+        frosting::println!();
+
         INSTALL_PATH.as_ptr().cast()
     }
 
@@ -53,6 +62,8 @@ pub static SteamBootstrapper_GetInstallDir: unsafe extern "C" fn() -> *const i8 
 pub static SteamBootstrapper_GetBaseUserDir: unsafe extern "C" fn() -> *const i8 = {
     #[inline(always)]
     pub unsafe extern "C" fn SteamBootstrapper_GetBaseUserDir() -> *const i8 {
+        frosting::println!();
+
         INSTALL_PATH.as_ptr().cast()
     }
 
@@ -65,8 +76,22 @@ pub static SteamBootstrapper_GetBaseUserDir: unsafe extern "C" fn() -> *const i8
 pub static SteamBootstrapper_GetLoggingDir: unsafe extern "C" fn() -> *const i8 = {
     #[inline(always)]
     pub unsafe extern "C" fn SteamBootstrapper_GetLoggingDir() -> *const i8 {
+        frosting::println!();
+
         INSTALL_PATH.as_ptr().cast()
     }
 
     SteamBootstrapper_GetLoggingDir
+};
+
+#[allow(non_snake_case)]
+#[no_mangle]
+#[used(linker)]
+pub static GenerateCEFLogDir: unsafe extern "C" fn() = {
+    #[inline(always)]
+    pub unsafe extern "C" fn GenerateCEFLogDir() {
+        frosting::println!();
+    }
+
+    GenerateCEFLogDir
 };

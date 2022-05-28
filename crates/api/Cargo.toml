@@ -5,7 +5,7 @@ version = "0.0.0"
 
 # keep this here, ill add vtable macro stuff in this lib, too
 [dependencies.frosting]
-git = "https://github.com/mov-rax-rax/frosting.git"
+git = "https://github.com/elysian6969/frosting.git"
 
 [dependencies.paste]
 version = "1.0"

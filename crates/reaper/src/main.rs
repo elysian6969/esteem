@@ -2,8 +2,8 @@ use serde::{Deserialize, Serialize};
 use std::collections::{BTreeMap, HashSet};
 use std::ffi::OsStr;
 use std::os::unix::process::CommandExt;
-use std::process::Command;
 use std::path::Path;
+use std::process::Command;
 use std::{env, fs};
 
 mod key;
@@ -89,13 +89,16 @@ fn main() {
     let path = Path::new(&program);
     let name = path.file_name().unwrap();
     let name = name.to_str().unwrap();
-   
+
     if let Some(options) = options.get(name) {
         let linux32 = path.with_file_name("bin");
         let linux64 = path.with_file_name("bin/linux64");
 
         // fixes csgo being unable to find it's own libraries?
-        env::set_var("LD_LIBRARY_PATH", format!("{}:/usr/lib/esteem/i686", linux64.display()));
+        env::set_var(
+            "LD_LIBRARY_PATH",
+            format!("{}:/usr/lib/esteem/i686", linux64.display()),
+        );
 
         println!("> launch options");
 

@@ -10,5 +10,8 @@ version = "3.1.6"
 [dependencies.libloading]
 version = "0.7"
 
+[dependencies.frosting]
+git = "https://github.com/elysian6969/frosting.git"
+
 [workspace]
 members = ["crates/*"]
