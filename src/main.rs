@@ -63,14 +63,6 @@ fn main() {
     let options = options::Options::parse();
 
     if env::var_os(key::ESTEEM_LOAD_UI).is_some() {
-        println!("current_dir = {:?}", std::env::current_dir());
-        println!("home = {:?}", std::env::var_os("HOME"));
-        println!("path = {:?}", std::env::var_os("PATH"));
-        println!(
-            "ld_library_path = {:?}",
-            std::env::var_os("LD_LIBRARY_PATH")
-        );
-
         let mut args = Vec::new();
 
         // crash reporter
