@@ -1,0 +1,18 @@
+[package]
+edition = "2021"
+name = "tier0_s"
+version = "0.0.0"
+
+[dependencies.esteem-util]
+path = "../util"
+
+[dependencies.frosting]
+git = "https://github.com/elysian6969/frosting"
+
+[dependencies.libc]
+features = ["align", "extra_traits"]
+version = "0.2"
+
+[lib]
+crate-type = ["cdylib"]
+path = "src/lib.rs"

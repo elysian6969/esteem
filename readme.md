@@ -4,26 +4,12 @@ attempting to figure out how steam works
 
 copy your steam install to `/usr/lib/esteem`
 
-compile components
+rename `ubuntu12_32` to `i686` (may be broken, may require a symlink, also yet to rename `ubuntu12_64`)
+
+yet to make some actual installer, for now cope with
 
 ```bash
-# steam bootstrapper (required)
-cargo build-esteem
-
-# steam error reporter (recommended)
-cargo build-error-reporter
-
-# steam reaper (launch env (options soontm) from $XDG_DATA_DIR/esteem/launch_options.toml)
-cargo build-reaper
-
-# gnome's zenity cli replacement (optional)
-cargo build-zenity
-
-# networkmanager stub (optional)
-cargo build-libnm
-
-# pipewire stub (optional)
-cargo build-libpipewire
+./install_all.sh
 ```
 
 copy components
@@ -36,6 +22,7 @@ cp ${CARGO_TARGET_DIR:-target}/i686-unknown-linux-gnu/release/esteem-reaper /usr
 
 cp ${CARGO_TARGET_DIR:-target}/i686-unknown-linux-gnu/release/libnm.so /usr/lib/i686/libnm.so
 cp ${CARGO_TARGET_DIR:-target}/i686-unknown-linux-gnu/release/libpipewire.so /usr/lib/i686/libpipewire.so
+cp ${CARGO_TARGET_DIR:-target}/i686-unknown-linux-gnu/release/libvideo.so /usr/lib/i686/libvideo.so
 ```
 
 ### thanks

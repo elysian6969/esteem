@@ -1,0 +1,7 @@
+[package]
+name = "esteem-util"
+version = "0.0.0"
+edition = "2021"
+
+[dependencies.frosting]
+git = "https://github.com/elysian6969/frosting"
