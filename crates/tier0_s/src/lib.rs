@@ -1,5 +1,9 @@
 #![allow(unused_variables)]
 #![feature(pointer_byte_offsets)]
+#![feature(maybe_uninit_uninit_array)]
+#![feature(maybe_uninit_array_assume_init)]
+#![feature(const_maybe_uninit_uninit_array)]
+#![feature(const_maybe_uninit_array_assume_init)]
 
 use esteem_util::stub;
 
@@ -463,8 +467,10 @@ stub!(g_bInException);
 stub!(g_pMemAllocSteam);
 stub!(vtune);
 
+use core::cell::UnsafeCell;
 use core::mem::MaybeUninit;
-use core::sync::atomic::{AtomicI32, Ordering};
+use core::ptr;
+use core::sync::atomic::{AtomicI32, AtomicPtr, Ordering};
 
 // tier0/threadtools.cpp
 /*
@@ -484,7 +490,7 @@ undefined4 ThreadInterlockedExchange(undefined4 *param_1,undefined4 param_2)
 pub unsafe extern "C" fn ThreadInterlockedExchange(dest: *mut AtomicI32, value: i32) -> i32 {
     let result = (*dest).swap(value, Ordering::SeqCst);
 
-    frosting::println!("(dest: {:?}, value: {:?}) -> {:?}", dest, value, result);
+    frosting::println!("(dest: \x1b[38;5;3m{:?}\x1b[m, value: \x1b[38;5;3m{:?}\x1b[m) -> \x1b[38;5;3m{:?}\x1b[m", dest, value, result);
 
     result
 }
@@ -495,9 +501,9 @@ pub unsafe extern "C" fn ThreadInterlockedExchange(dest: *mut AtomicI32, value: 
 pub struct Mutex {
     mutex: libc::pthread_mutex_t,
     attr: libc::pthread_mutexattr_t,
-    current_owner_id: u32,
+    /*current_owner_id: u32,
     lock_count: u16,
-    trace: bool,
+    trace: bool,*/
 }
 
 /*
@@ -515,7 +521,7 @@ void __thiscall SteamThreadTools::CThreadMutex::CThreadMutex(CThreadMutex *this)
 */
 #[no_mangle]
 pub unsafe extern "C" fn _ZN16SteamThreadTools12CThreadMutexC1Ev(this: *mut Mutex) {
-    frosting::println!("(this: {:?})", this);
+    frosting::println!("(this: \x1b[38;5;3m{:?}\x1b[m)", this);
 
     let mut attr = MaybeUninit::uninit();
 
@@ -528,6 +534,64 @@ pub unsafe extern "C" fn _ZN16SteamThreadTools12CThreadMutexC1Ev(this: *mut Mute
 
     (*this).mutex = mutex.assume_init();
     (*this).attr = attr.assume_init();
+
+    println!("this: {:?}", (*this));
+}
+
+const fn new_tls() -> [AtomicPtr<()>; 32] {
+    let mut tls = MaybeUninit::uninit_array();
+    let mut i = 0;
+
+    while i < 32 {
+        tls[i] = MaybeUninit::new(AtomicPtr::new(ptr::null_mut()));
+        i += 1;
+    }
+
+    unsafe { MaybeUninit::array_assume_init(tls) }
+}
+
+pub const BAD_THREAD_LOCAL: u32 = 0xFFFFFFFF;
+
+struct TlsFlags([UnsafeCell<bool>; 32]);
+
+impl TlsFlags {
+    pub const fn new() -> Self {
+        let mut tls = MaybeUninit::uninit_array();
+        let mut i = 0;
+
+        while i < 32 {
+            tls[i] = MaybeUninit::new(UnsafeCell::new(false));
+            i += 1;
+        }
+
+        Self(unsafe { MaybeUninit::array_assume_init(tls) })
+    }
+
+    pub fn get(&self, index: usize) -> &mut bool {
+        unsafe { &mut *self.0[index].get() }
+    }
+}
+
+unsafe impl Send for TlsFlags {}
+unsafe impl Sync for TlsFlags {}
+
+static TLS_VALUES: [AtomicPtr<()>; 32] = new_tls();
+static TLS_FLAGS: TlsFlags = TlsFlags::new();
+
+fn tls_alloc() -> u32 {
+    let mut i = 0;
+
+    while i < 32 {
+        if !*TLS_FLAGS.get(i) {
+            *TLS_FLAGS.get(i) = true;
+
+            return i as u32;
+        }
+
+        i += 1;
+    }
+
+    BAD_THREAD_LOCAL
 }
 
 // public/tier0/threadtools.h
@@ -535,6 +599,7 @@ pub unsafe extern "C" fn _ZN16SteamThreadTools12CThreadMutexC1Ev(this: *mut Mute
 #[repr(C)]
 pub struct ThreadLocalBase {
     key: libc::pthread_key_t,
+    m_index: u32,
 }
 
 // tier0/threadtools.cpp
@@ -563,13 +628,17 @@ void __thiscall SteamThreadTools::CThreadLocalBase::CThreadLocalBase(CThreadLoca
 */
 #[no_mangle]
 pub unsafe extern "C" fn _ZN16SteamThreadTools16CThreadLocalBaseC2Ev(this: *mut ThreadLocalBase) {
-    frosting::println!("(this: {:?})", this);
+    frosting::println!("(this: \x1b[38;5;3m{:?}\x1b[m)", this);
 
-    this.byte_offset(4).cast::<u8>().write(0);
+    (*this).m_index = tls_alloc();
+
+    if (*this).m_index == BAD_THREAD_LOCAL {
+        panic!("out of thread local storage");
+    }
 
     if libc::pthread_key_create(&mut (*this).key, None) != 0 {
         panic!("out of thread local storage");
     }
 
-    this.byte_offset(4).cast::<u8>().write(1);
+    println!("this: {:?}", (*this));
 }

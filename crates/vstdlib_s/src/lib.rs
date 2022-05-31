@@ -311,7 +311,7 @@ pub unsafe extern "C" fn V_atof(string: *const u8) -> f32 {
         .map(|value| value as f32)
         .unwrap_or(f32::NAN);
 
-    frosting::println!("(string: {:?}) -> {:?}", string, result);
+    frosting::println!("(string: \x1b[38;5;2m{:?}\x1b[m) -> \x1b[38;5;3m{:?}\x1b[m", string, result);
 
     result
 }
@@ -328,7 +328,7 @@ pub unsafe extern "C" fn V_atoui64(string: *const u8) -> u64 {
     .or_else(|| string.parse().ok())
     .unwrap_or(u64::MAX);
 
-    frosting::println!("(string: {:?}) -> {:?}", string, result);
+    frosting::println!("(string: \x1b[38;5;2m{:?}\x1b[m) -> \x1b[38;5;3m{:?}\x1b[m", string, result);
 
     result
 }
@@ -341,7 +341,7 @@ pub unsafe extern "C" fn _ZN11SteamStdLib17CCommandLineParamC1EPKcS2_(
 ) -> bool {
     let param = esteem_util::str_from_ptr(param);
 
-    frosting::println!("(this: {:?}, param: {:?})", this, param);
+    frosting::println!("(this: \x1b[38;5;3m{:?}\x1b[m, param: \x1b[38;5;2m{:?}\x1b[m)", this, param);
 
     false
 }
@@ -354,7 +354,7 @@ pub unsafe extern "C" fn _ZN11SteamStdLib17CCommandLineParamC2EPKcS2_(
 ) -> bool {
     let param = esteem_util::str_from_ptr(param);
 
-    frosting::println!("(this: {:?}, param: {:?})", this, param);
+    frosting::println!("(this: \x1b[38;5;3m{:?}\x1b[m, param: \x1b[38;5;2m{:?}\x1b[m)", this, param);
 
     false
 }
