@@ -570,6 +570,6 @@ pub unsafe extern "C" fn _ZN16SteamThreadTools16CThreadLocalBaseC2Ev(this: *mut 
     if libc::pthread_key_create(&mut (*this).key, None) != 0 {
         panic!("out of thread local storage");
     }
-    
+
     this.byte_offset(4).cast::<u8>().write(1);
 }

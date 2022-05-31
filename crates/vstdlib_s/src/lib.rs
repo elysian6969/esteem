@@ -319,11 +319,14 @@ pub unsafe extern "C" fn V_atof(string: *const u8) -> f32 {
 #[no_mangle]
 pub unsafe extern "C" fn V_atoui64(string: *const u8) -> u64 {
     let string = esteem_util::str_from_ptr(string);
-    let result = u64::from_str_radix(string, 16)
-        .ok()
-        .or_else(|| Some(f32::from_str(string).ok()? as u64))
-        .or_else(|| string.parse().ok())
-        .unwrap_or(u64::MAX);
+    let result = if string.starts_with("0x") {
+        u64::from_str_radix(&string[2..], 16).ok()
+    } else {
+        None
+    }
+    .or_else(|| Some(f32::from_str(string).ok()? as u64))
+    .or_else(|| string.parse().ok())
+    .unwrap_or(u64::MAX);
 
     frosting::println!("(string: {:?}) -> {:?}", string, result);
 
@@ -332,18 +335,28 @@ pub unsafe extern "C" fn V_atoui64(string: *const u8) -> u64 {
 
 // SteamStdLib::CCommandLineParam::CCommandLineParam(char const*, char const*)
 #[no_mangle]
-pub unsafe extern "C" fn _ZN11SteamStdLib17CCommandLineParamC1EPKcS2_(a: *const u8, b: *const u8) {
+pub unsafe extern "C" fn _ZN11SteamStdLib17CCommandLineParamC1EPKcS2_(
+    a: *const u8,
+    b: *const u8,
+) -> bool {
     let a = esteem_util::str_from_ptr(a);
     let b = esteem_util::str_from_ptr(b);
 
     frosting::println!("(a: {:?}, b: {:?})", a, b);
+
+    false
 }
 
 // SteamStdLib::CCommandLineParam::CCommandLineParam(char const*, char const*)
 #[no_mangle]
-pub unsafe extern "C" fn _ZN11SteamStdLib17CCommandLineParamC2EPKcS2_(a: *const u8, b: *const u8) {
+pub unsafe extern "C" fn _ZN11SteamStdLib17CCommandLineParamC2EPKcS2_(
+    a: *const u8,
+    b: *const u8,
+) -> bool {
     let a = esteem_util::str_from_ptr(a);
     let b = esteem_util::str_from_ptr(b);
 
     frosting::println!("(a: {:?}, b: {:?})", a, b);
+
+    false
 }
