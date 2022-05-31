@@ -1,4 +1,5 @@
 #![allow(unused_variables)]
+#![feature(pointer_byte_offsets)]
 
 use esteem_util::stub;
 
@@ -345,7 +346,7 @@ stub!(_ZN16SteamThreadTools16CThreadFullMutexC1EbPKcbb);
 stub!(_ZN16SteamThreadTools16CThreadFullMutexC2EbPKcbb);
 stub!(_ZN16SteamThreadTools16CThreadLocalBase3SetEPv);
 stub!(_ZN16SteamThreadTools16CThreadLocalBaseC1Ev);
-stub!(_ZN16SteamThreadTools16CThreadLocalBaseC2Ev);
+//stub!(_ZN16SteamThreadTools16CThreadLocalBaseC2Ev);
 stub!(_ZN16SteamThreadTools16CThreadLocalBaseD1Ev);
 stub!(_ZN16SteamThreadTools16CThreadLocalBaseD2Ev);
 stub!(_ZN16SteamThreadTools16CThreadSemaphore7ReleaseEl);
@@ -481,7 +482,7 @@ undefined4 ThreadInterlockedExchange(undefined4 *param_1,undefined4 param_2)
  */
 #[no_mangle]
 pub unsafe extern "C" fn ThreadInterlockedExchange(dest: *mut AtomicI32, value: i32) -> i32 {
-    let result = (*dest).swap(value, Ordering::Relaxed);
+    let result = (*dest).swap(value, Ordering::SeqCst);
 
     frosting::println!("(dest: {:?}, value: {:?}) -> {:?}", dest, value, result);
 
@@ -527,4 +528,48 @@ pub unsafe extern "C" fn _ZN16SteamThreadTools12CThreadMutexC1Ev(this: *mut Mute
 
     (*this).mutex = mutex.assume_init();
     (*this).attr = attr.assume_init();
+}
+
+// public/tier0/threadtools.h
+#[derive(Debug)]
+#[repr(C)]
+pub struct ThreadLocalBase {
+    key: libc::pthread_key_t,
+}
+
+// tier0/threadtools.cpp
+/*
+void __thiscall SteamThreadTools::CThreadLocalBase::CThreadLocalBase(CThreadLocalBase *this)
+
+{
+  code *pcVar1;
+  char cVar2;
+  int iVar3;
+
+  this[4] = (CThreadLocalBase)0x0;
+  iVar3 = pthread_key_create((pthread_key_t *)this,(__destr_function *)0x0);
+  if (iVar3 != 0) {
+    cVar2 = AssertMsgHelper<true>::AssertFailed
+                      ("/data/src/tier0/threadtools.cpp",0xb47,"Out of thread local storage!\n");
+    if (cVar2 == '\0') {
+      pcVar1 = (code *)swi(3);
+      (*pcVar1)();
+      return;
+    }
+  }
+  this[4] = (CThreadLocalBase)0x1;
+  return;
+}
+*/
+#[no_mangle]
+pub unsafe extern "C" fn _ZN16SteamThreadTools16CThreadLocalBaseC2Ev(this: *mut ThreadLocalBase) {
+    frosting::println!("(this: {:?})", this);
+
+    this.byte_offset(4).cast::<u8>().write(0);
+
+    if libc::pthread_key_create(&mut (*this).key, None) != 0 {
+        panic!("out of thread local storage");
+    }
+    
+    this.byte_offset(4).cast::<u8>().write(1);
 }

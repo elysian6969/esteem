@@ -1,6 +1,6 @@
 #!/bin/sh
 
-./build_all.sh
+./build_all_debug.sh
 
 # binaries
 sesh cp -v ${CARGO_TARGET_DIR:-target}/i686-unknown-linux-gnu/debug/esteem /usr/lib/esteem/i686/esteem
