@@ -336,13 +336,12 @@ pub unsafe extern "C" fn V_atoui64(string: *const u8) -> u64 {
 // SteamStdLib::CCommandLineParam::CCommandLineParam(char const*, char const*)
 #[no_mangle]
 pub unsafe extern "C" fn _ZN11SteamStdLib17CCommandLineParamC1EPKcS2_(
-    a: *const u8,
-    b: *const u8,
+    this: *const (),
+    param: *const u8,
 ) -> bool {
-    let a = esteem_util::str_from_ptr(a);
-    let b = esteem_util::str_from_ptr(b);
+    let param = esteem_util::str_from_ptr(param);
 
-    frosting::println!("(a: {:?}, b: {:?})", a, b);
+    frosting::println!("(this: {:?}, param: {:?})", this, param);
 
     false
 }
@@ -350,13 +349,12 @@ pub unsafe extern "C" fn _ZN11SteamStdLib17CCommandLineParamC1EPKcS2_(
 // SteamStdLib::CCommandLineParam::CCommandLineParam(char const*, char const*)
 #[no_mangle]
 pub unsafe extern "C" fn _ZN11SteamStdLib17CCommandLineParamC2EPKcS2_(
-    a: *const u8,
-    b: *const u8,
+    this: *const (),
+    param: *const u8,
 ) -> bool {
-    let a = esteem_util::str_from_ptr(a);
-    let b = esteem_util::str_from_ptr(b);
+    let param = esteem_util::str_from_ptr(param);
 
-    frosting::println!("(a: {:?}, b: {:?})", a, b);
+    frosting::println!("(this: {:?}, param: {:?})", this, param);
 
     false
 }
