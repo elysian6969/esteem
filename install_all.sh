@@ -11,6 +11,8 @@ sesh cp -v ${CARGO_TARGET_DIR:-target}/release/esteem-zenity /usr/lib/esteem/i68
 # libraries
 sesh cp -v ${CARGO_TARGET_DIR:-target}/i686-unknown-linux-gnu/release/libnm.so /usr/lib/esteem/i686/libnm.so.0
 sesh cp -v ${CARGO_TARGET_DIR:-target}/i686-unknown-linux-gnu/release/libpipewire.so /usr/lib/esteem/i686/libpipewire-0.3.so.0
-sesh cp -v ${CARGO_TARGET_DIR:-target}/i686-unknown-linux-gnu/release/libtier0_s.so /usr/lib/esteem/i686/libtier0_s.so
+# segmentation fault
+# sesh cp -v ${CARGO_TARGET_DIR:-target}/i686-unknown-linux-gnu/release/libtier0_s.so /usr/lib/esteem/i686/libtier0_s.so
 sesh cp -v ${CARGO_TARGET_DIR:-target}/i686-unknown-linux-gnu/release/libvideo.so /usr/lib/esteem/i686/libvideo.so
-sesh cp -v ${CARGO_TARGET_DIR:-target}/i686-unknown-linux-gnu/release/libvstdlib_s.so /usr/lib/esteem/i686/libvstdlib_s.so
+# segmentation fault
+# sesh cp -v ${CARGO_TARGET_DIR:-target}/i686-unknown-linux-gnu/release/libvstdlib_s.so /usr/lib/esteem/i686/libvstdlib_s.so
