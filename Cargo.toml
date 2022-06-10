@@ -13,5 +13,12 @@ version = "0.7"
 [dependencies.frosting]
 git = "https://github.com/elysian6969/frosting.git"
 
+[lib]
+crate-type = ["cdylib"]
+path = "src/lib.rs"
+
+[profile.release]
+lto = "fat"
+
 [workspace]
 members = ["crates/*"]

@@ -54,6 +54,7 @@ impl SteamUI {
             let main: Symbol<MainFn> = self.library.get(b"SteamDllMain\0").unwrap();
             let main: MainFn = mem::transmute(main.into_raw());
 
+            // FIXME
             main(len, args.as_ptr());
         }
     }

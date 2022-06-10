@@ -488,9 +488,16 @@ undefined4 ThreadInterlockedExchange(undefined4 *param_1,undefined4 param_2)
  */
 #[no_mangle]
 pub unsafe extern "C" fn ThreadInterlockedExchange(dest: *mut AtomicI32, value: i32) -> i32 {
+    frosting::println!();
+
     let result = (*dest).swap(value, Ordering::SeqCst);
 
-    frosting::println!("(dest: \x1b[38;5;3m{:?}\x1b[m, value: \x1b[38;5;3m{:?}\x1b[m) -> \x1b[38;5;3m{:?}\x1b[m", dest, value, result);
+    frosting::println!(
+        "(dest: \x1b[38;5;3m{:?}\x1b[m, value: \x1b[38;5;3m{:?}\x1b[m) -> \x1b[38;5;3m{:?}\x1b[m",
+        dest,
+        value,
+        result
+    );
 
     result
 }
@@ -521,6 +528,8 @@ void __thiscall SteamThreadTools::CThreadMutex::CThreadMutex(CThreadMutex *this)
 */
 #[no_mangle]
 pub unsafe extern "C" fn _ZN16SteamThreadTools12CThreadMutexC1Ev(this: *mut Mutex) {
+    frosting::println!();
+
     frosting::println!("(this: \x1b[38;5;3m{:?}\x1b[m)", this);
 
     let mut attr = MaybeUninit::uninit();
@@ -579,6 +588,8 @@ static TLS_VALUES: [AtomicPtr<()>; 32] = new_tls();
 static TLS_FLAGS: TlsFlags = TlsFlags::new();
 
 fn tls_alloc() -> u32 {
+    frosting::println!();
+
     let mut i = 0;
 
     while i < 32 {
@@ -628,6 +639,8 @@ void __thiscall SteamThreadTools::CThreadLocalBase::CThreadLocalBase(CThreadLoca
 */
 #[no_mangle]
 pub unsafe extern "C" fn _ZN16SteamThreadTools16CThreadLocalBaseC2Ev(this: *mut ThreadLocalBase) {
+    frosting::println!();
+
     frosting::println!("(this: \x1b[38;5;3m{:?}\x1b[m)", this);
 
     (*this).m_index = tls_alloc();

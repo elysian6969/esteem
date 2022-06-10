@@ -26,6 +26,9 @@ pub struct Options {
     /// Set the `STEAM_ZENITY` environment variable.
     #[clap(default_value = "/usr/bin/zenity", long)]
     pub zenity: PathBuf,
+
+    #[clap(long)]
+    pub game: Option<u16>,
 }
 
 impl Options {

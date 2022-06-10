@@ -30,7 +30,7 @@ stub!(GetPlatformName);
 stub!(GetPlatformNameFromEPlatformType);
 stub!(GetPortableOsVersionInformation);
 stub!(InstallUniformRandomStream);
-stub!(KeyValuesSystemSteam);
+//stub!(KeyValuesSystemSteam);
 stub!(OSIsCompatible);
 stub!(OSTypesAreCompatible);
 stub!(SteamRealPath);
@@ -306,18 +306,26 @@ stub!(vstdlib_wcstoui64);
 // https://github.com/ValveSoftware/source-sdk-2013/blob/master/sp/src/public/tier1/strtools.h
 #[no_mangle]
 pub unsafe extern "C" fn V_atof(string: *const u8) -> f32 {
+    frosting::println!();
+
     let string = esteem_util::str_from_ptr(string);
     let result = f64::from_str(string)
         .map(|value| value as f32)
         .unwrap_or(f32::NAN);
 
-    frosting::println!("(string: \x1b[38;5;2m{:?}\x1b[m) -> \x1b[38;5;3m{:?}\x1b[m", string, result);
+    frosting::println!(
+        "(string: \x1b[38;5;2m{:?}\x1b[m) -> \x1b[38;5;3m{:?}\x1b[m",
+        string,
+        result
+    );
 
     result
 }
 
 #[no_mangle]
 pub unsafe extern "C" fn V_atoui64(string: *const u8) -> u64 {
+    frosting::println!();
+
     let string = esteem_util::str_from_ptr(string);
     let result = if string.starts_with("0x") {
         u64::from_str_radix(&string[2..], 16).ok()
@@ -328,7 +336,11 @@ pub unsafe extern "C" fn V_atoui64(string: *const u8) -> u64 {
     .or_else(|| string.parse().ok())
     .unwrap_or(u64::MAX);
 
-    frosting::println!("(string: \x1b[38;5;2m{:?}\x1b[m) -> \x1b[38;5;3m{:?}\x1b[m", string, result);
+    frosting::println!(
+        "(string: \x1b[38;5;2m{:?}\x1b[m) -> \x1b[38;5;3m{:?}\x1b[m",
+        string,
+        result
+    );
 
     result
 }
@@ -339,9 +351,15 @@ pub unsafe extern "C" fn _ZN11SteamStdLib17CCommandLineParamC1EPKcS2_(
     this: *const (),
     param: *const u8,
 ) -> bool {
+    frosting::println!();
+
     let param = esteem_util::str_from_ptr(param);
 
-    frosting::println!("(this: \x1b[38;5;3m{:?}\x1b[m, param: \x1b[38;5;2m{:?}\x1b[m)", this, param);
+    frosting::println!(
+        "(this: \x1b[38;5;3m{:?}\x1b[m, param: \x1b[38;5;2m{:?}\x1b[m)",
+        this,
+        param
+    );
 
     false
 }
@@ -352,9 +370,46 @@ pub unsafe extern "C" fn _ZN11SteamStdLib17CCommandLineParamC2EPKcS2_(
     this: *const (),
     param: *const u8,
 ) -> bool {
+    frosting::println!();
+
     let param = esteem_util::str_from_ptr(param);
 
-    frosting::println!("(this: \x1b[38;5;3m{:?}\x1b[m, param: \x1b[38;5;2m{:?}\x1b[m)", this, param);
+    frosting::println!(
+        "(this: \x1b[38;5;3m{:?}\x1b[m, param: \x1b[38;5;2m{:?}\x1b[m)",
+        this,
+        param
+    );
 
     false
+}
+
+use core::cell::UnsafeCell;
+
+#[repr(C)]
+pub struct KeyValues {
+    block: UnsafeCell<[u8; 256]>,
+}
+
+impl KeyValues {
+    pub const fn new() -> Self {
+        Self {
+            block: UnsafeCell::new([0; 256]),
+        }
+    }
+
+    pub fn as_ptr(&self) -> *mut u8 {
+        self.block.get().cast()
+    }
+}
+
+unsafe impl Send for KeyValues {}
+unsafe impl Sync for KeyValues {}
+
+static KEY_VALUES: KeyValues = KeyValues::new();
+
+#[no_mangle]
+pub unsafe extern "C" fn KeyValuesSystemSteam() -> *mut u8 {
+    frosting::println!();
+
+    KEY_VALUES.as_ptr()
 }

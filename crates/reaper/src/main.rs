@@ -53,12 +53,12 @@ fn main() {
         .map(|key| OsStr::new(key))
         .collect::<HashSet<&'static OsStr>>();
 
-    println!("> environment");
+    println!("esteem | environment");
 
     for (key, val) in env::vars_os().collect::<BTreeMap<_, _>>() {
         if !key_filter.contains(&key.as_os_str()) {
             if show_removed_vars {
-                println!("\x1b[38;5;1m{key:?}\x1b[m=\x1b[38;5;1m{val:?}\x1b[m");
+                println!("esteem | \x1b[38;5;1m{key:?}\x1b[m=\x1b[38;5;1m{val:?}\x1b[m");
             }
 
             env::remove_var(key);
@@ -67,11 +67,12 @@ fn main() {
         }
 
         if show_vars {
-            println!("\x1b[38;5;2m{key:?}\x1b[m=\x1b[38;5;2m{val:?}\x1b[m");
+            println!("esteem | \x1b[38;5;2m{key:?}\x1b[m=\x1b[38;5;2m{val:?}\x1b[m");
         }
     }
 
-    println!("> command line");
+    println!("esteem | command line");
+    print!("esteem | ");
 
     for arg in env::args_os() {
         print!("\x1b[38;5;2m{arg:?}\x1b[m ");
@@ -91,7 +92,7 @@ fn main() {
     let name = name.to_str().unwrap();
 
     if let Some(options) = options.get(name) {
-        let linux32 = path.with_file_name("bin");
+        //let linux32 = path.with_file_name("bin");
         let linux64 = path.with_file_name("bin/linux64");
 
         // fixes csgo being unable to find it's own libraries?
@@ -100,15 +101,17 @@ fn main() {
             format!("{}:/usr/lib/esteem/i686", linux64.display()),
         );
 
-        println!("> launch options");
+        println!("esteem | launch options");
 
         let vars = options.vars.iter().flat_map(|var| var.split_once('='));
 
         for (key, val) in vars {
-            println!("\x1b[38;5;2m{key:?}\x1b[m=\x1b[38;5;2m{val:?}\x1b[m");
+            println!("esteem | \x1b[38;5;2m{key:?}\x1b[m=\x1b[38;5;2m{val:?}\x1b[m");
             command.env(key, val);
         }
     }
+
+    println!("esteem | running game");
 
     let _ = command.args(args).exec();
 }
