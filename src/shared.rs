@@ -25,24 +25,13 @@ pub enum LauncherKind {
 
 #[allow(non_snake_case)]
 #[no_mangle]
-#[used(linker)]
-pub static GetClientLauncherType: unsafe extern "C" fn() -> LauncherKind = {
-    #[inline(always)]
-    pub unsafe extern "C" fn GetClientLauncherType() -> LauncherKind {
-        frosting::println!();
+pub unsafe extern "C" fn GetClientLauncherType() -> LauncherKind {
+    frosting::println!();
 
-        LauncherKind::Default
-    }
+    LauncherKind::Default
+}
 
-    GetClientLauncherType
-};
-
-#[allow(non_snake_case)]
-#[no_mangle]
-#[used(linker)]
-pub static pfnGetClientLauncherType: unsafe extern "C" fn() -> LauncherKind = GetClientLauncherType;
-
-#[allow(non_snake_case)]
+/*#[allow(non_snake_case)]
 #[no_mangle]
 #[used(linker)]
 pub static SteamBootstrapper_GetInstallDir: unsafe extern "C" fn() -> *const i8 = {
@@ -94,4 +83,4 @@ pub static GenerateCEFLogDir: unsafe extern "C" fn() = {
     }
 
     GenerateCEFLogDir
-};
+};*/
