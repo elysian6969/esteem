@@ -1,5 +1,6 @@
 const INSTALL_PATH: &str = "/usr/lib/esteem\0";
 
+#[allow(dead_code)]
 #[derive(Clone, Copy, Debug, Eq, PartialEq)]
 #[repr(i32)]
 pub enum LauncherKind {
