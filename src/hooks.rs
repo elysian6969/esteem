@@ -1,8 +1,10 @@
+use crate::webhelper::{BlinkFeature, Realm, Universe, WebHelper};
 use crate::{key, var_split, PREFIX};
-use crate::webhelper::{WebHelper, Universe, BlinkFeature, Realm};
-use std::path::Path;
+use std::ffi::OsString;
 use std::mem::MaybeUninit;
-use std::{mem, ptr, slice, str, env};
+use std::os::unix::ffi::OsStringExt;
+use std::path::Path;
+use std::{env, mem, ptr, slice, str};
 
 #[inline]
 pub unsafe fn slice_from_ptr<'a, T>(ptr: *const T) -> &'a [T]
@@ -50,16 +52,6 @@ pub unsafe extern "C" fn fopen(path: *const u8, mode: *const u8) -> *const u8 {
     ptr::null()
 }
 
-use std::cell::UnsafeCell;
-struct A(UnsafeCell<bool>);
-
-unsafe impl Send for A {}
-unsafe impl Sync for A {}
-
-static WEBHELPER_LOADED: A = A(UnsafeCell::new(false));
-
-use std::fs;
-
 #[no_mangle]
 pub unsafe extern "C" fn system(command: *const u8) -> i32 {
     type Fn = unsafe extern "C" fn(command: *const u8) -> i32;
@@ -67,7 +59,7 @@ pub unsafe extern "C" fn system(command: *const u8) -> i32 {
     let real_system: Fn = mem::transmute(libc::dlsym(libc::RTLD_NEXT, "system\0".as_ptr().cast()));
     let command2 = str_from_ptr(command);
 
-    if command2.contains("steamwebhelper") && WEBHELPER_LOADED.0.get().read() == false {
+    if command2.contains("steamwebhelper") {
         println!(
             "esteem | intercepted \x1b[38;5;3msystem\x1b[m(command: \x1b[38;5;2m{command2:?}\x1b[m)"
         );
@@ -109,7 +101,7 @@ pub unsafe extern "C" fn system(command: *const u8) -> i32 {
             .hang_monitor(false)
             .index("/usr/lib/esteem/steamui/index.html")
             .lang("en_US")
-            .library_path(ld_library_path)
+            .library_path(&ld_library_path)
             .log_dir("/ely/data/esteem/cef/log")
             .log_file("/ely/data/esteem/cef/log.txt")
             .media_stream(true)
@@ -123,24 +115,21 @@ pub unsafe extern "C" fn system(command: *const u8) -> i32 {
 
         println!("esteem | executing {webhelper:?}");
 
-        let pid = fs::read_to_string("/tmp/webhelper.lock")
-            .ok()
-            .and_then(|pid| i32::from_str_radix(&pid, 10).ok())
-            .unwrap_or(-1);
+        std::env::set_var("LD_LIBRARY_PATH", ld_library_path);
 
-        println!("pid = {pid:?}");
+        let mut command = OsString::from("/usr/lib/esteem/ubuntu12_64/steamwebhelper ");
 
-        if Path::new(&format!("/proc/{pid}")).exists() {
-            println!("esteem | \x1b[38;5;1mrejected\x1b[m \x1b[38;5;3msystem\x1b[m(command: \x1b[38;5;2m{command2:?}\x1b[m)");
-
-            return -1;
-        } else {
-            let mut child = webhelper.spawn().unwrap();
-            fs::write("/tmp/webhelper.lock", child.id().to_string()).unwrap();
-            WEBHELPER_LOADED.0.get().write(true);
+        for arg in webhelper.command().get_args() {
+            command.push("'");
+            command.push(arg);
+            command.push("' ");
         }
 
-        return 0;
+        command.push("\0");
+        let mut bytes = command.into_vec();
+        let res = real_system(bytes.as_ptr());
+
+        return res;
     }
 
     // fallthrough

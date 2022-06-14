@@ -277,7 +277,7 @@ impl WebHelper {
     }
 
     #[inline]
-    fn command(&self) -> Command {
+    pub fn command(&self) -> Command {
         let mut command = Command::new(&self.program);
 
         if let Some(build_id) = self.build_id {

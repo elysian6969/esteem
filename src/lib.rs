@@ -25,14 +25,13 @@ const fn new_path(path: &'static str) -> &'static Path {
     unsafe { &*(path as *const str as *const Path) }
 }
 
+fn var_os<K: AsRef<OsStr>>(key: K) -> OsString {
+    env::var_os(key).unwrap_or_default()
+}
 
-        fn var_os<K: AsRef<OsStr>>(key: K) -> OsString {
-            env::var_os(key).unwrap_or_default()
-        }
-
-        fn var_split<K: AsRef<OsStr>>(key: K) -> Vec<PathBuf> {
-            env::split_paths(&var_os(key)).collect()
-        }
+fn var_split<K: AsRef<OsStr>>(key: K) -> Vec<PathBuf> {
+    env::split_paths(&var_os(key)).collect()
+}
 
 const PREFIX: &Path = new_path("/usr/lib/esteem");
 
