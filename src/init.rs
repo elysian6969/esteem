@@ -10,10 +10,6 @@ static BOOTSTRAP: unsafe extern "C" fn() = bootstrap;
 #[link_section = ".text.startup"]
 pub unsafe extern "C" fn bootstrap() {
     println!("esteem | bootstrap");
-
-    let program = std::env::args_os().next();
-
-    println!("esteem | {program:?}");
 }
 
 // we'd like to be interpreted, force interpretation

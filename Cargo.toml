@@ -5,12 +5,22 @@ version = "0.0.0"
 
 [dependencies.clap]
 features = ["derive"]
-version = "3.1.6"
+version = "*"
+
+[dependencies.dirs]
+default-features = false
+version = "*"
+
+[dependencies.libc]
+default-features = false
+version = "*"
 
 [dependencies.libloading]
-version = "0.7"
+default-features = false
+version = "*"
 
 [dependencies.frosting]
+default-features = false
 git = "https://github.com/elysian6969/frosting.git"
 
 [lib]

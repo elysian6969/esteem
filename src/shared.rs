@@ -1,5 +1,3 @@
-const INSTALL_PATH: &str = "/usr/lib/esteem\0";
-
 #[allow(dead_code)]
 #[derive(Clone, Copy, Debug, Eq, PartialEq)]
 #[repr(i32)]
@@ -27,61 +25,9 @@ pub enum LauncherKind {
 #[allow(non_snake_case)]
 #[no_mangle]
 pub unsafe extern "C" fn GetClientLauncherType() -> LauncherKind {
-    frosting::println!();
+    let kind = LauncherKind::Default;
 
-    LauncherKind::Default
+    println!("esteem | steamui requested client launcher type (\x1b[38;5;3m{kind:?}\x1b[m)");
+
+    kind
 }
-
-/*#[allow(non_snake_case)]
-#[no_mangle]
-#[used(linker)]
-pub static SteamBootstrapper_GetInstallDir: unsafe extern "C" fn() -> *const i8 = {
-    #[inline(always)]
-    pub unsafe extern "C" fn SteamBootstrapper_GetInstallDir() -> *const i8 {
-        frosting::println!();
-
-        INSTALL_PATH.as_ptr().cast()
-    }
-
-    SteamBootstrapper_GetInstallDir
-};
-
-#[allow(non_snake_case)]
-#[no_mangle]
-#[used(linker)]
-pub static SteamBootstrapper_GetBaseUserDir: unsafe extern "C" fn() -> *const i8 = {
-    #[inline(always)]
-    pub unsafe extern "C" fn SteamBootstrapper_GetBaseUserDir() -> *const i8 {
-        frosting::println!();
-
-        INSTALL_PATH.as_ptr().cast()
-    }
-
-    SteamBootstrapper_GetBaseUserDir
-};
-
-#[allow(non_snake_case)]
-#[no_mangle]
-#[used(linker)]
-pub static SteamBootstrapper_GetLoggingDir: unsafe extern "C" fn() -> *const i8 = {
-    #[inline(always)]
-    pub unsafe extern "C" fn SteamBootstrapper_GetLoggingDir() -> *const i8 {
-        frosting::println!();
-
-        INSTALL_PATH.as_ptr().cast()
-    }
-
-    SteamBootstrapper_GetLoggingDir
-};
-
-#[allow(non_snake_case)]
-#[no_mangle]
-#[used(linker)]
-pub static GenerateCEFLogDir: unsafe extern "C" fn() = {
-    #[inline(always)]
-    pub unsafe extern "C" fn GenerateCEFLogDir() {
-        frosting::println!();
-    }
-
-    GenerateCEFLogDir
-};*/

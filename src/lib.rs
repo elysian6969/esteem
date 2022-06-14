@@ -1,3 +1,5 @@
+// stfu clap
+#![allow(deprecated)]
 #![feature(asm_sym)]
 #![feature(used_with_arg)]
 
@@ -8,18 +10,29 @@ use std::path::{Path, PathBuf};
 use std::process::Command;
 
 #[allow(dead_code)]
-mod arg;
-mod init;
+pub mod arg;
+pub mod hooks;
+pub mod init;
 #[allow(dead_code)]
-mod key;
-mod options;
+pub mod key;
+pub mod options;
 #[allow(dead_code)]
-mod shared;
-mod ui;
+pub mod shared;
+pub mod ui;
+pub mod webhelper;
 
 const fn new_path(path: &'static str) -> &'static Path {
     unsafe { &*(path as *const str as *const Path) }
 }
+
+
+        fn var_os<K: AsRef<OsStr>>(key: K) -> OsString {
+            env::var_os(key).unwrap_or_default()
+        }
+
+        fn var_split<K: AsRef<OsStr>>(key: K) -> Vec<PathBuf> {
+            env::split_paths(&var_os(key)).collect()
+        }
 
 const PREFIX: &Path = new_path("/usr/lib/esteem");
 
@@ -109,6 +122,8 @@ fn main() {
 
         if let Some(game) = options.game {
             args.push(format!("steam://rungameid/{game}"));
+        } else {
+            //args.push("steam://open/largegameslist");
         }
 
         println!("esteem | load \x1b[38;5;2msteamui.so\x1b[m");
@@ -119,14 +134,6 @@ fn main() {
     } else {
         let i686 = PREFIX.join("i686");
         let esteem = i686.join("libesteem.so");
-
-        fn var_os<K: AsRef<OsStr>>(key: K) -> OsString {
-            env::var_os(key).unwrap_or_default()
-        }
-
-        fn var_split<K: AsRef<OsStr>>(key: K) -> Vec<PathBuf> {
-            env::split_paths(&var_os(key)).collect()
-        }
 
         let mut path = var_split(key::PATH);
         let mut ld_library_path = var_split(key::LD_LIBRARY_PATH);
@@ -146,10 +153,11 @@ fn main() {
             //  __stream = popen("LD_LIBRARY_PATH=\"$SYSTEM_LD_LIBRARY_PATH\" PATH=\"$SYSTEM_PATH\" lspci -mm -n", "r");
 
             command
-                .arg0(esteem)
+                .arg0(esteem.clone())
                 .args(args.next())
                 .current_dir(&PREFIX)
                 .env(key::ESTEEM_LOAD_UI, "1")
+                .env("LD_PRELOAD", esteem.clone())
                 .env(key::LD_LIBRARY_PATH, &ld_library_path)
                 .env(key::HOME, data_dir)
                 .env(key::PATH, &path)
