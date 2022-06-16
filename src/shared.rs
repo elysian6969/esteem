@@ -25,6 +25,10 @@ pub enum LauncherKind {
 #[allow(non_snake_case)]
 #[no_mangle]
 pub unsafe extern "C" fn GetClientLauncherType() -> LauncherKind {
+    let retaddr: *const u8;
+    std::arch::asm!("mov {}, ebp", out(reg) retaddr);
+    println!("rdtaddr = {retaddr:?}");
+
     let kind = LauncherKind::Default;
 
     println!("esteem | steamui requested client launcher type (\x1b[38;5;3m{kind:?}\x1b[m)");

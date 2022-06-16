@@ -8,11 +8,11 @@ use std::time::Duration;
 use std::{io, thread};
 use stream::Steam3Client;
 
-mod hello;
-mod identify;
-mod listener;
-mod op;
-mod stream;
+pub mod hello;
+pub mod identify;
+pub mod listener;
+pub mod op;
+pub mod stream;
 
 const _1F: u32 = u32::from_be_bytes([0x1F, 0x00, 0x00, 0x00]);
 
@@ -20,11 +20,13 @@ const CSGO: u32 = 730;
 const RE: u32 = 967460;
 
 fn main() -> io::Result<()> {
-    /*let mut server = Steam3Server::bind()?;
+    let mut server = Steam3Server::bind()?;
+
+    println!("esteem | steam3server is bound");
 
     for client in server.listener.incoming() {
-        println!(" -> new client");
-    }*/
+        println!("esteem | client connected");
+    }
 
     let mut client = Steam3Client::connect()?;
     let process_id = unsafe { libc::getpid() };

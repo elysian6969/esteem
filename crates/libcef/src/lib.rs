@@ -25,10 +25,19 @@ pub enum Entry {
 }
 
 #[no_mangle]
-pub extern "C" fn cef_api_hash(entry: Entry) -> *const u8 {
-    frosting::println!("entry = {:?}", entry);
+pub extern "C" fn cef_api_hash(entry: i32) -> *const u8 {
+    // from CefCommandLine * __thiscall CefCommandLine::CreateCommandLine(CefCommandLine *this)
+    // xref cef_api_hash()
+    const HASH: &str = "743250ae805433901558963f427b03588f746391\0";
 
-    "d686964de5e01eed900d78d5f8a7da9f8fc3a777".as_ptr()
+    println!("cef_api_hash(entry: \x1b[38;5;3m{entry:?}\x1b[m) -> \x1b[38;5;2m{HASH:?}\x1b[m");
+
+    HASH.as_ptr()
+}
+
+#[no_mangle]
+pub extern "C" fn cef_initialize() {
+    println!("nigger");
 }
 
 stub!(cef_binary_value_create);
@@ -41,7 +50,6 @@ stub!(cef_do_message_loop_work);
 stub!(cef_enable_highdpi_support);
 stub!(cef_execute_process);
 stub!(cef_get_xdisplay);
-stub!(cef_initialize);
 stub!(cef_list_value_create);
 stub!(cef_parse_url);
 stub!(cef_post_data_create);

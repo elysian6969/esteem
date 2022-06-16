@@ -156,6 +156,7 @@ fn main() {
                 .args(args.next())
                 .current_dir(&PREFIX)
                 .env(key::ESTEEM_LOAD_UI, "1")
+                .env("CPU_MHZ", "3799.960")
                 .env("LD_PRELOAD", esteem.clone())
                 .env(key::LD_LIBRARY_PATH, &ld_library_path)
                 .env(key::HOME, data_dir)
