@@ -45,11 +45,13 @@ pub unsafe extern "C" fn fopen(path: *const u8, mode: *const u8) -> *const u8 {
         || path2.starts_with("/sys")
         || path2.contains("crash_reporter.cfg"))
     {
+        #[cfg(debug_assertions)]
         println!("esteem | intercepted \x1b[38;5;3mfopen\x1b[m(path: \x1b[38;5;2m{path2:?}\x1b[m, mode: \x1b[38;5;2m{mode2:?}\x1b[m)");
 
         return real_fopen(path, mode);
     }
 
+    #[cfg(debug_assertions)]
     println!("esteem | \x1b[38;5;1mrejected\x1b[m \x1b[38;5;3mfopen\x1b[m(path: \x1b[38;5;2m{path2:?}\x1b[m, mode: \x1b[38;5;2m{mode2:?}\x1b[m)");
 
     ptr::null()
@@ -63,6 +65,7 @@ pub unsafe extern "C" fn system(command: *const u8) -> i32 {
     let command2 = str_from_ptr(command);
 
     if command2.contains("steamwebhelper") {
+        #[cfg(debug_assertions)]
         println!(
             "esteem | intercepted \x1b[38;5;3msystem\x1b[m(command: \x1b[38;5;2m{command2:?}\x1b[m)"
         );
@@ -85,6 +88,7 @@ pub unsafe extern "C" fn system(command: *const u8) -> i32 {
         let res = &command2[pos.saturating_add(10)..];
         let pos2 = res.find(" ").unwrap();
         let pid = &res[..pos2.saturating_sub(1)];
+        #[cfg(debug_assertions)]
         println!("pid = {pid:?}");
         let pid: u32 = pid.parse().unwrap();
 
@@ -116,6 +120,7 @@ pub unsafe extern "C" fn system(command: *const u8) -> i32 {
             .steam_pid(pid)
             .universe(Universe::Dev);
 
+        #[cfg(debug_assertions)]
         println!("esteem | executing {webhelper:?}");
 
         std::env::set_var("LD_LIBRARY_PATH", ld_library_path);
@@ -151,6 +156,7 @@ pub unsafe extern "C" fn system(command: *const u8) -> i32 {
 
         let pos = command2.find(">").unwrap();
         let path = &command2[pos.saturating_add(1)..];
+        #[cfg(debug_assertions)]
         println!("path = {path:?}");
         std::fs::write(path, FREE).unwrap();
         return 0;
@@ -159,6 +165,7 @@ pub unsafe extern "C" fn system(command: *const u8) -> i32 {
     // fallthrough
     // `/usr/lib/esteem/i686/../ubuntu12_32/vulkandriverquery`
     // `/usr/lib/esteem/i686/../ubuntu12_32/gldriverquery`
+    #[cfg(debug_assertions)]
     println!("esteem | \x1b[38;5;1mrejected\x1b[m \x1b[38;5;3msystem\x1b[m(command: \x1b[38;5;2m{command2:?}\x1b[m)");
 
     -1
@@ -172,6 +179,7 @@ pub unsafe extern "C" fn stat(path: *const u8, buf: *mut u8) -> i32 {
 
     let path2 = str_from_ptr(path);
 
+    #[cfg(debug_assertions)]
     println!("esteem | intercepted \x1b[38;5;3mstat\x1b[m(path: \x1b[38;5;2m{path2:?}\x1b[m)");
 
     real_stat(path, buf)
@@ -183,6 +191,7 @@ pub unsafe extern "C" fn fstat(fd: i32, buf: *mut u8) -> i32 {
 
     let real_stat: Fn = mem::transmute(libc::dlsym(libc::RTLD_NEXT, "fstat\0".as_ptr().cast()));
 
+    #[cfg(debug_assertions)]
     println!("esteem | intercepted \x1b[38;5;3mfstat\x1b[m(fd: \x1b[38;5;2m{fd:?}\x1b[m)");
 
     real_stat(fd, buf)
@@ -196,6 +205,7 @@ pub unsafe extern "C" fn lstat(path: *const u8, buf: *mut u8) -> i32 {
 
     let path2 = str_from_ptr(path);
 
+    #[cfg(debug_assertions)]
     println!("esteem | intercepted \x1b[38;5;3mlstat\x1b[m(path: \x1b[38;5;2m{path2:?}\x1b[m)");
 
     real_stat(path, buf)
@@ -209,6 +219,7 @@ pub unsafe extern "C" fn statfs(path: *const u8, buf: *mut u8) -> i32 {
 
     let path2 = str_from_ptr(path);
 
+    #[cfg(debug_assertions)]
     println!("esteem | intercepted \x1b[38;5;3mstatfs\x1b[m(path: \x1b[38;5;2m{path2:?}\x1b[m)");
 
     real_stat(path, buf)
@@ -222,6 +233,7 @@ pub unsafe extern "C" fn statfs64(path: *const u8, buf: *mut u8) -> i32 {
 
     let path2 = str_from_ptr(path);
 
+    #[cfg(debug_assertions)]
     println!("esteem | intercepted \x1b[38;5;3mstatfs64\x1b[m(path: \x1b[38;5;2m{path2:?}\x1b[m)");
 
     real_stat(path, buf)
@@ -231,16 +243,23 @@ pub unsafe extern "C" fn statfs64(path: *const u8, buf: *mut u8) -> i32 {
 pub unsafe extern "C" fn open(path: *const u8, mode: i32) -> i32 {
     type Fn = unsafe extern "C" fn(path: *const u8, mode: i32) -> i32;
 
+    let retaddr: *const u8;
+    std::arch::asm!("mov {}, ebp", out(reg) retaddr);
+    #[cfg(debug_assertions)]
+    println!("retaddr = {retaddr:?}");
+
     let real_stat: Fn = mem::transmute(libc::dlsym(libc::RTLD_NEXT, "open\0".as_ptr().cast()));
 
     let path2 = str_from_ptr(path);
 
     if !(path2.starts_with("/proc") || path2.starts_with("/sys")) {
+        #[cfg(debug_assertions)]
         println!("esteem | intercepted \x1b[38;5;3mopen\x1b[m(path: \x1b[38;5;2m{path2:?}\x1b[m, mode: \x1b[38;5;3m{mode:?}\x1b[m)");
 
         return real_stat(path, mode);
     }
 
+    #[cfg(debug_assertions)]
     println!("esteem | \x1b[38;5;1mrejected\x1b[m \x1b[38;5;3mopen\x1b[m(path: \x1b[38;5;2m{path2:?}\x1b[m, mode: \x1b[38;5;3m{mode:?}\x1b[m)");
 
     -1

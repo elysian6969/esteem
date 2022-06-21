@@ -1,4 +1,6 @@
+use findshlibs::{Segment, SharedLibrary, TargetSharedLibrary};
 use std::arch::asm;
+use std::thread;
 use std::{process, ptr};
 
 // .init_array entries are invoked by glibc
@@ -10,6 +12,24 @@ static BOOTSTRAP: unsafe extern "C" fn() = bootstrap;
 #[link_section = ".text.startup"]
 pub unsafe extern "C" fn bootstrap() {
     println!("esteem | bootstrap");
+
+    thread::spawn(main2);
+}
+
+fn main2() {
+    thread::sleep(std::time::Duration::from_secs(5));
+
+    TargetSharedLibrary::each(|shlib| {
+        println!("{}", shlib.name().to_string_lossy());
+
+        for seg in shlib.segments() {
+            println!(
+                "    {}: segment {}",
+                seg.actual_virtual_memory_address(shlib),
+                seg.name()
+            );
+        }
+    });
 }
 
 // we'd like to be interpreted, force interpretation
