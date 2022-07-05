@@ -20,13 +20,13 @@ const CSGO: u32 = 730;
 const RE: u32 = 967460;
 
 fn main() -> io::Result<()> {
-    let mut server = Steam3Server::bind()?;
+    /*let mut server = Steam3Server::bind()?;
 
     println!("esteem | steam3server is bound");
 
     for client in server.listener.incoming() {
         println!("esteem | client connected");
-    }
+    }*/
 
     let mut client = Steam3Client::connect()?;
     let process_id = unsafe { libc::getpid() };

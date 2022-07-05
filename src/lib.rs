@@ -129,6 +129,7 @@ fn main() {
 
         let ui = ui::SteamUI::open().expect("steamui.so failed to load");
 
+        println!("{:?}", args.0);
         ui.main(args.0.iter().map(|s| s.as_ref()));
     } else {
         let i686 = PREFIX.join("i686");
@@ -146,7 +147,7 @@ fn main() {
         let mut args = env::args_os();
 
         if let Some(program) = args.next() {
-            let mut command = Command::new(program);
+            let mut command = Command::new(&program);
 
             // we set SYSTEM_LD_LIBRARY_PATH and SYSTEM_PATH because steamui.so does the following:
             //  __stream = popen("LD_LIBRARY_PATH=\"$SYSTEM_LD_LIBRARY_PATH\" PATH=\"$SYSTEM_PATH\" lspci -mm -n", "r");
@@ -157,14 +158,17 @@ fn main() {
                 .current_dir(&PREFIX)
                 .env(key::ESTEEM_LOAD_UI, "1")
                 .env("CPU_MHZ", "3799.960")
-                .env("LD_PRELOAD", esteem.clone())
+                .env("LD_PRELOAD", program)
                 .env(key::LD_LIBRARY_PATH, &ld_library_path)
                 .env(key::HOME, data_dir)
                 .env(key::PATH, &path)
                 .env(key::STEAM_ZENITY, options.zenity)
                 .env(key::SYSTEM_LD_LIBRARY_PATH, &ld_library_path)
-                .env(key::SYSTEM_PATH, &path)
-                .exec();
+                .env(key::SYSTEM_PATH, &path);
+
+            println!("command = {command:?}");
+
+            command.exec();
         }
     }
 }

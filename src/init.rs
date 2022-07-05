@@ -17,6 +17,7 @@ pub unsafe extern "C" fn bootstrap() {
 }
 
 fn main2() {
+    return;
     thread::sleep(std::time::Duration::from_secs(5));
 
     TargetSharedLibrary::each(|shlib| {
@@ -62,7 +63,7 @@ pub unsafe extern "C" fn _start() -> ! {
 unsafe fn init_rust_args(argc: i32, argv: *const *const u8) {
     // https://github.com/rust-lang/rust/blob/master/library/std/src/sys/unix/args.rs#L110
     extern "C" {
-        #[link_name = "_ZN3std3sys4unix4args3imp15ARGV_INIT_ARRAY17h50aca612ab3a5c2fE"]
+        #[link_name = "_ZN3std3sys4unix4args3imp15ARGV_INIT_ARRAY17hda426f9ff8bc0e9eE"]
         static ARGV_INIT_ARRAY:
             unsafe extern "C" fn(argc: i32, argv: *const *const u8, envp: *const *const u8);
     }

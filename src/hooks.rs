@@ -1,4 +1,5 @@
-use crate::webhelper::{BlinkFeature, Realm, Universe, WebHelper};
+use findshlibs::{Segment, SharedLibrary, TargetSharedLibrary};
+use crate::webhelper::{BlinkFeature, CommandDecoder, PasswordStore, Realm, Universe, WebHelper};
 use crate::{key, var_split, PREFIX};
 use std::ffi::OsString;
 use std::mem::MaybeUninit;
@@ -59,9 +60,52 @@ pub unsafe extern "C" fn fopen(path: *const u8, mode: *const u8) -> *const u8 {
 
 #[no_mangle]
 pub unsafe extern "C" fn system(command: *const u8) -> i32 {
+
+    let retaddr: *const u8;
+    std::arch::asm!("mov {}, ebp", out(reg) retaddr);
+
     type Fn = unsafe extern "C" fn(command: *const u8) -> i32;
 
     let real_system: Fn = mem::transmute(libc::dlsym(libc::RTLD_NEXT, "system\0".as_ptr().cast()));
+
+
+    println!("retaddr = {}", retaddr as usize);
+    println!("system = {}", system as usize);
+    if retaddr as usize == system as usize {
+        println!("retaddr is us, skipping");
+
+        let res = real_system(command);
+
+        return res;
+    }
+
+    let mut libs = vec![];
+
+    TargetSharedLibrary::each(|library| {
+        let library_name = Path::new(library.name());
+        let library_name = match library_name.file_name() {
+            Some(library_name) => library_name,
+            None => return,
+        };
+        
+        let library_name = library_name.to_string_lossy().to_string();
+        let base_addr = library.actual_load_addr().0;
+        let end_addr = base_addr + library.len();
+        let addr_range = base_addr..=end_addr;
+
+        libs.push((library_name, addr_range));
+    });
+
+    for lib in libs {
+        if lib.1.contains(&(retaddr as usize)) {
+            println!("retaddr in range {:?} of {:0X?}", lib.1, lib.0);
+        }
+
+        if lib.1.contains(&(system as usize)) {
+            println!("retaddr in range {:?} of {:0X?}", lib.1, lib.0);
+        }
+    }
+
     let command2 = str_from_ptr(command);
 
     if command2.contains("steamwebhelper") {
@@ -95,9 +139,12 @@ pub unsafe extern "C" fn system(command: *const u8) -> i32 {
         let mut webhelper = WebHelper::new("/usr/lib/esteem/x86_64/steamwebhelper");
 
         webhelper
-            .build_id(0)
+            .build_id(1655931638)
             .cache_dir("/ely/data/esteem/cef/cache")
             .current_dir("/usr/lib/esteem")
+            .command_decoder(CommandDecoder::Passthrough)
+            .composer_mode(false)
+            .client_ui("/usr/lib/esteem/clientui")
             .disable_features([BlinkFeature::Badging])
             .enable_features([
                 BlinkFeature::AudioWorklet,
@@ -112,15 +159,17 @@ pub unsafe extern "C" fn system(command: *const u8) -> i32 {
             .log_dir("/ely/data/esteem/cef/log")
             .log_file("/ely/data/esteem/cef/log.txt")
             .media_stream(true)
+            .password_store(PasswordStore::Basic)
             .realm(Realm::Global)
             .quick_menu(false)
             .sandbox(false)
             .seccomp_filter(false)
             .smooth_scrolling(false)
+            .steam_id(0)
             .steam_pid(pid)
-            .universe(Universe::Dev);
+            .universe(Universe::Public);
 
-        #[cfg(debug_assertions)]
+        //#[cfg(debug_assertions)]
         println!("esteem | executing {webhelper:?}");
 
         std::env::set_var("LD_LIBRARY_PATH", ld_library_path);
@@ -242,11 +291,6 @@ pub unsafe extern "C" fn statfs64(path: *const u8, buf: *mut u8) -> i32 {
 #[no_mangle]
 pub unsafe extern "C" fn open(path: *const u8, mode: i32) -> i32 {
     type Fn = unsafe extern "C" fn(path: *const u8, mode: i32) -> i32;
-
-    let retaddr: *const u8;
-    std::arch::asm!("mov {}, ebp", out(reg) retaddr);
-    #[cfg(debug_assertions)]
-    println!("retaddr = {retaddr:?}");
 
     let real_stat: Fn = mem::transmute(libc::dlsym(libc::RTLD_NEXT, "open\0".as_ptr().cast()));
 
