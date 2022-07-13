@@ -84,6 +84,13 @@ fn main() {
         // definitely dont need this
         args.push(arg::NO_INTRO);
 
+        if options.dev {
+            print_option("dev");
+
+            args.push("-dev");
+            args.push("-console");
+        }
+
         if options.devtools {
             print_option("devtools");
 

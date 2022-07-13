@@ -5,26 +5,24 @@ version = "0.0.0"
 
 [dependencies.clap]
 features = ["derive"]
-version = "*"
-
-[dependencies.findshlibs]
-version = "0.10"
+version = "3.2"
 
 [dependencies.dirs]
 default-features = false
-version = "*"
-
-[dependencies.libc]
-default-features = false
-version = "*"
-
-[dependencies.libloading]
-default-features = false
-version = "*"
+version = "4.0"
 
 [dependencies.frosting]
 default-features = false
-git = "https://github.com/elysian6969/frosting.git"
+git = "https://github.com/elysian6969/frosting"
+
+[dependencies.libc]
+default-features = false
+version = "0.2"
+
+[dependencies.link]
+default-features = false
+#git = "https://github.com/elysian6969/link"
+path = "../link"
 
 [lib]
 crate-type = ["cdylib"]

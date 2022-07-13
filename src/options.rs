@@ -7,6 +7,9 @@ pub struct Options {
     #[clap(long)]
     pub devtools: bool,
 
+    #[clap(long)]
+    pub dev: bool,
+
     /// Enable some more steam logs.
     #[clap(long)]
     pub more_log: bool,

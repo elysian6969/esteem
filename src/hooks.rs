@@ -1,4 +1,3 @@
-use findshlibs::{Segment, SharedLibrary, TargetSharedLibrary};
 use crate::webhelper::{BlinkFeature, CommandDecoder, PasswordStore, Realm, Universe, WebHelper};
 use crate::{key, var_split, PREFIX};
 use std::ffi::OsString;
@@ -60,14 +59,12 @@ pub unsafe extern "C" fn fopen(path: *const u8, mode: *const u8) -> *const u8 {
 
 #[no_mangle]
 pub unsafe extern "C" fn system(command: *const u8) -> i32 {
-
     let retaddr: *const u8;
     std::arch::asm!("mov {}, ebp", out(reg) retaddr);
 
     type Fn = unsafe extern "C" fn(command: *const u8) -> i32;
 
     let real_system: Fn = mem::transmute(libc::dlsym(libc::RTLD_NEXT, "system\0".as_ptr().cast()));
-
 
     println!("retaddr = {}", retaddr as usize);
     println!("system = {}", system as usize);
@@ -77,33 +74,6 @@ pub unsafe extern "C" fn system(command: *const u8) -> i32 {
         let res = real_system(command);
 
         return res;
-    }
-
-    let mut libs = vec![];
-
-    TargetSharedLibrary::each(|library| {
-        let library_name = Path::new(library.name());
-        let library_name = match library_name.file_name() {
-            Some(library_name) => library_name,
-            None => return,
-        };
-        
-        let library_name = library_name.to_string_lossy().to_string();
-        let base_addr = library.actual_load_addr().0;
-        let end_addr = base_addr + library.len();
-        let addr_range = base_addr..=end_addr;
-
-        libs.push((library_name, addr_range));
-    });
-
-    for lib in libs {
-        if lib.1.contains(&(retaddr as usize)) {
-            println!("retaddr in range {:?} of {:0X?}", lib.1, lib.0);
-        }
-
-        if lib.1.contains(&(system as usize)) {
-            println!("retaddr in range {:?} of {:0X?}", lib.1, lib.0);
-        }
     }
 
     let command2 = str_from_ptr(command);
@@ -136,7 +106,7 @@ pub unsafe extern "C" fn system(command: *const u8) -> i32 {
         println!("pid = {pid:?}");
         let pid: u32 = pid.parse().unwrap();
 
-        let mut webhelper = WebHelper::new("/usr/lib/esteem/x86_64/steamwebhelper");
+        let mut webhelper = WebHelper::new("/usr/lib/esteem/x86_64/cringe");
 
         webhelper
             .build_id(1655931638)
@@ -174,7 +144,7 @@ pub unsafe extern "C" fn system(command: *const u8) -> i32 {
 
         std::env::set_var("LD_LIBRARY_PATH", ld_library_path);
 
-        let mut command = OsString::from("/usr/lib/esteem/x86_64/steamwebhelper ");
+        let mut command = OsString::from("/usr/lib/esteem/x86_64/cringe ");
 
         for arg in webhelper.command().get_args() {
             command.push("'");

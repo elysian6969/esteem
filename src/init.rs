@@ -1,4 +1,3 @@
-use findshlibs::{Segment, SharedLibrary, TargetSharedLibrary};
 use std::arch::asm;
 use std::thread;
 use std::{process, ptr};
@@ -12,25 +11,6 @@ static BOOTSTRAP: unsafe extern "C" fn() = bootstrap;
 #[link_section = ".text.startup"]
 pub unsafe extern "C" fn bootstrap() {
     println!("esteem | bootstrap");
-
-    thread::spawn(main2);
-}
-
-fn main2() {
-    return;
-    thread::sleep(std::time::Duration::from_secs(5));
-
-    TargetSharedLibrary::each(|shlib| {
-        println!("{}", shlib.name().to_string_lossy());
-
-        for seg in shlib.segments() {
-            println!(
-                "    {}: segment {}",
-                seg.actual_virtual_memory_address(shlib),
-                seg.name()
-            );
-        }
-    });
 }
 
 // we'd like to be interpreted, force interpretation
@@ -63,7 +43,7 @@ pub unsafe extern "C" fn _start() -> ! {
 unsafe fn init_rust_args(argc: i32, argv: *const *const u8) {
     // https://github.com/rust-lang/rust/blob/master/library/std/src/sys/unix/args.rs#L110
     extern "C" {
-        #[link_name = "_ZN3std3sys4unix4args3imp15ARGV_INIT_ARRAY17hda426f9ff8bc0e9eE"]
+        #[link_name = "_ZN3std3sys4unix4args3imp15ARGV_INIT_ARRAY17hc3ba6850842973f9E"]
         static ARGV_INIT_ARRAY:
             unsafe extern "C" fn(argc: i32, argv: *const *const u8, envp: *const *const u8);
     }

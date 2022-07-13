@@ -1,17 +1,39 @@
-use libloading::os::unix::{Library, Symbol};
+use link::Library;
 use std::ffi::{CString, OsStr};
 use std::os::unix::ffi::OsStrExt;
 use std::{mem, ptr};
 
 type MainFn = unsafe extern "C" fn(argc: i32, argv: *const *const i8);
 
+pub struct Flage {
+    cef_disable_sandbox: bool,
+    cef_disable_breakpad: bool,
+    cef_disable_hang_timeouts: bool,
+    disable_partner_licenses: bool,
+    fs_log: bool,
+    fs_log_bins: bool,
+    log_net_api: bool,
+    no_big_picture: bool,
+    no_browser: bool,
+    no_cef_sandbox: bool,
+    no_crash_monitor: bool,
+    no_intro: bool,
+    no_sandbox: bool,
+    no_shared_textures: bool,
+    open_devtools: bool,
+    open_overlay_devtools: bool,
+    skip_streaming_drivers: bool,
+    vr_skip: bool,
+    windowed: bool,
+}
+
 pub struct SteamUI {
     library: Library,
 }
 
 impl SteamUI {
-    pub fn open() -> Result<Self, libloading::Error> {
-        let library = unsafe { Library::new("steamui.so")? };
+    pub fn open() -> Result<Self, link::OpenError> {
+        let library = unsafe { Library::load("steamui.so")? };
 
         Ok(Self { library })
     }
@@ -51,8 +73,8 @@ impl SteamUI {
             //     return;
             // }
             //
-            let main: Symbol<MainFn> = self.library.get(b"SteamDllMain\0").unwrap();
-            let main: MainFn = mem::transmute(main.into_raw());
+            let main = self.library.symbol_ptr::<_, u8>("SteamDllMain\0").unwrap();
+            let main: MainFn = mem::transmute(main);
 
             // FIXME
             main(len, args.as_ptr());
