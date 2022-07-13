@@ -9,14 +9,13 @@
         let esteem_config = config.join(NAME);
         let esteem_data = data.join(NAME);
 
-        let options = options::Options::parse();
         let Options {
             cef,
             cef_sandbox,
             game_id,
             developer,
             verbose,
-        } = &options;
+        } = = options::Options::parse();
 
         let mut interface = Interface::new();
 
@@ -30,3 +29,54 @@
         } else {
             interface.open(Open::Normal);
         }
+
+#[derive(Clone, Copy, Debug, Eq, PartialEq)]
+pub enum Open {
+    Normal,
+    Game(u32),
+}
+
+#[derive(Debug)]
+pub struct Interface {
+    cef: bool,
+    cef_sandbox: bool,
+    developer: u8,
+    verbose: u8,
+}
+
+impl Interface {
+    #[inline]
+    pub const fn new() -> Self {
+        Self {
+            cef: true,
+            cef_sandbox: true,
+            developer: 0,
+            verbose: 0,
+        }
+    }
+
+    #[inline]
+    pub fn cef(&mut self, enable: bool) -> &mut Self {
+        self.cef = enable;
+    }
+    
+    #[inline]
+    pub fn cef_sandbox(&mut self, enable: bool) -> &mut Self {
+        self.cef_sandbox = enable;
+    }
+    
+    #[inline]
+    pub fn developer(&mut self, enable: bool) -> &mut Self {
+        self.developer = enable;
+    }
+
+    #[inline]
+    pub fn open(self, open: Open) -> Result<(), ()> {
+        Ok(())
+    }
+
+    #[inline]
+    pub fn verbose(&mut self, enable: bool) -> &mut Self {
+        self.verbose = enable;
+    }
+}
