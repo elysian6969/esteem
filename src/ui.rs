@@ -5,28 +5,6 @@ use std::{mem, ptr};
 
 type MainFn = unsafe extern "C" fn(argc: i32, argv: *const *const i8);
 
-pub struct Flage {
-    cef_disable_sandbox: bool,
-    cef_disable_breakpad: bool,
-    cef_disable_hang_timeouts: bool,
-    disable_partner_licenses: bool,
-    fs_log: bool,
-    fs_log_bins: bool,
-    log_net_api: bool,
-    no_big_picture: bool,
-    no_browser: bool,
-    no_cef_sandbox: bool,
-    no_crash_monitor: bool,
-    no_intro: bool,
-    no_sandbox: bool,
-    no_shared_textures: bool,
-    open_devtools: bool,
-    open_overlay_devtools: bool,
-    skip_streaming_drivers: bool,
-    vr_skip: bool,
-    windowed: bool,
-}
-
 pub struct SteamUI {
     library: Library,
 }
